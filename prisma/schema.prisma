@@ -1,0 +1,189 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Modèle pour tous les utilisateurs (table commune)
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastLogin     DateTime?
+  accountStatus String    @default("pending") // "active", "pending", "blocked"
+  userType      String    // "admin", "volunteer", "beneficiary"
+
+  // Relations
+  admin       Admin?
+  volunteer   Volunteer?
+  beneficiary Beneficiary?
+
+  @@map("users")
+}
+
+// Modèle pour les administrateurs
+model Admin {
+  id          String  @id @default(uuid())
+  firstName   String
+  lastName    String
+  phone       String?
+  accessLevel String  @default("local_admin") // "super_admin", "regional_admin", "local_admin"
+  
+  // Relation avec User
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String  @unique
+  
+  // Relations avec les entités gérées
+  managedRegionId String?
+  region         Region?  @relation(fields: [managedRegionId], references: [id])
+  
+  @@map("administrators")
+}
+
+// Modèle pour les bénévoles
+model Volunteer {
+  id              String   @id @default(uuid())
+  firstName       String
+  lastName        String
+  birthDate       DateTime
+  phone           String
+  experience      Int?     @default(0) // années d'expérience
+  skills          Json?    // compétences (langues, expertises...)
+  availability    Json?    // disponibilités
+  trainings       Json?    // formations suivies
+  specializations Json?    // domaines de spécialisation
+  verified        Boolean  @default(false)
+  
+  // Relation avec User
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String   @unique
+  
+  // Relation avec l'antenne locale
+  localUnitId     String?
+  localUnit       LocalUnit? @relation(fields: [localUnitId], references: [id])
+  
+  // Relation avec les diagnostics réalisés
+  diagnostics     Diagnostic[]
+  
+  @@map("volunteers")
+}
+
+// Modèle pour les bénéficiaires
+model Beneficiary {
+  id                   String   @id @default(uuid())
+  firstName            String
+  lastName             String
+  birthDate            DateTime
+  phone                String?
+  address              String?
+  city                 String?
+  postalCode           String?
+  familySituation      String?  // "single", "couple", "family"...
+  householdSize        Int?     @default(1)
+  professionalSituation String? // "employed", "unemployed", "student"...
+  housingType          String?  // "owner", "tenant", "homeless"...
+  monthlyIncome        Int?
+  priorityNeeds        Json?    // besoins prioritaires
+  
+  // Relation avec User
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId               String   @unique
+  
+  // Relation avec les diagnostics reçus
+  diagnostics          Diagnostic[]
+  
+  // Relation avec les aides reçues
+  aids                 BeneficiaryAid[]
+  
+  @@map("beneficiaries")
+}
+
+// Modèle pour les régions
+model Region {
+  id       String     @id @default(uuid())
+  name     String
+  
+  // Relations
+  admins   Admin[]
+  localUnits LocalUnit[]
+  
+  @@map("regions")
+}
+
+// Modèle pour les antennes locales
+model LocalUnit {
+  id          String   @id @default(uuid())
+  name        String
+  address     String
+  city        String
+  postalCode  String
+  contactEmail String?
+  contactPhone String?
+  
+  // Relation avec la région
+  regionId    String
+  region      Region   @relation(fields: [regionId], references: [id])
+  
+  // Relation avec les bénévoles
+  volunteers  Volunteer[]
+  
+  @@map("local_units")
+}
+
+// Modèle pour les diagnostics
+model Diagnostic {
+  id              String   @id @default(uuid())
+  diagnosticDate  DateTime @default(now())
+  status          String   @default("pending") // "pending", "in_progress", "completed", "follow_up"
+  results         Json?    // résultats du diagnostic
+  recommendations Json?    // recommandations
+  nextSteps       String?  // prochaines étapes
+  
+  // Relations
+  beneficiaryId   String
+  beneficiary     Beneficiary @relation(fields: [beneficiaryId], references: [id])
+  
+  volunteerId     String?
+  volunteer       Volunteer? @relation(fields: [volunteerId], references: [id])
+  
+  @@map("diagnostics")
+}
+
+// Modèle pour les types d'aide disponibles
+model AidType {
+  id                 String   @id @default(uuid())
+  name               String
+  description        String
+  eligibilityCriteria Json?   // critères d'éligibilité
+  
+  // Relations avec les aides accordées
+  beneficiaryAids    BeneficiaryAid[]
+  
+  @@map("aid_types")
+}
+
+// Modèle pour les liens entre bénéficiaires et aides
+model BeneficiaryAid {
+  id           String   @id @default(uuid())
+  status       String   @default("requested") // "requested", "approved", "rejected", "provided"
+  requestDate  DateTime @default(now())
+  decisionDate DateTime?
+  notes        String?
+  
+  // Relations
+  beneficiaryId String
+  beneficiary   Beneficiary @relation(fields: [beneficiaryId], references: [id])
+  
+  aidTypeId     String
+  aidType       AidType     @relation(fields: [aidTypeId], references: [id])
+  
+  @@map("beneficiary_aids")
+}
