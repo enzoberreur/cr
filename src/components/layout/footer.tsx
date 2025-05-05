@@ -1,16 +1,22 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 
 export function Footer() {
   return (
     <footer className="bg-neutral-50 border-t py-12">
-      <div className="container grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+      <div className="container mx-auto px-4 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             {/* Logo de la Croix-Rouge */}
             <div className="relative h-8 w-8">
-              <div className="absolute inset-0 bg-red-600 rounded-sm rotate-45"></div>
-              <div className="absolute inset-0 bg-red-600 rounded-sm"></div>
+              <Image
+                src="/logo.svg"
+                alt="Logo Croix-Rouge"
+                fill
+                className="object-contain"
+                priority
+              />
             </div>
             <span className="font-bold text-xl">Croix-Rouge Française</span>
           </div>
@@ -78,7 +84,7 @@ export function Footer() {
         </div>
       </div>
       
-      <div className="container mt-8 pt-8 border-t">
+      <div className="container mx-auto px-4 mt-8 pt-8 border-t">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-neutral-500">
             © {new Date().getFullYear()} Croix-Rouge Française. Tous droits réservés.

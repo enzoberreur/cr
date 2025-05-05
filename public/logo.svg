@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="800px"
+   height="600px"
+   viewbox="0 0 800 600"
+   preserveAspectRatio="none"
+   id="svg1345"
+   sodipodi:version="0.32"
+   inkscape:version="0.43"
+   sodipodi:docname="blanc croix rouge.svg"
+   sodipodi:docbase="/home/dcrochet/Images/wikipédia">
+  <metadata
+     id="metadata1363">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     inkscape:window-height="997"
+     inkscape:window-width="1280"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base"
+     inkscape:zoom="0.62333333"
+     inkscape:cx="400"
+     inkscape:cy="300"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:current-layer="svg1345" />
+  <defs
+     id="defs1347">
+    <rect
+       width="100px"
+       height="600px"
+       fill="#ffff00"
+       id="1" />
+  </defs>
+  <rect
+     width="800px"
+     height="600px"
+     fill="#ff0000"
+     id="rect1350"
+     style="fill:#ffffff;fill-opacity:1" />
+  <rect
+     style="opacity:1;fill:#ff0000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:10;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-dashoffset:0.8;stroke-opacity:1"
+     id="rect10101"
+     width="80.214005"
+     height="328.87701"
+     x="343.31552"
+     y="144.38503" />
+  <rect
+     y="220.58832"
+     x="-340.90915"
+     height="328.87701"
+     width="80.214005"
+     id="rect10976"
+     style="opacity:1;fill:#ff0000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:10;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-dashoffset:0.8;stroke-opacity:1"
+     transform="matrix(0,-1,1,0,0,0)" />
+</svg>

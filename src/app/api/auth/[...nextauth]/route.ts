@@ -3,10 +3,13 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { compareFaceEmbeddings } from "@/lib/face-recognition";
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    // Provider standard pour l'authentification par email et mot de passe
     CredentialsProvider({
+      id: "credentials",
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email", placeholder: "email@exemple.fr" },
@@ -63,11 +66,83 @@ export const authOptions: NextAuthOptions = {
             id: user.id,
             email: user.email,
             name,
-            role: user.userType,
-            ...(user.userType === "admin" ? { accessLevel: user.admin?.accessLevel } : {}),
+            userType: user.userType,
+            accountStatus: user.accountStatus,
+            ...(user.userType === "admin" && user.admin ? { adminId: user.admin.id } : {}),
+            ...(user.userType === "volunteer" && user.volunteer ? { volunteerId: user.volunteer.id } : {}),
+            ...(user.userType === "beneficiary" && user.beneficiary ? { beneficiaryId: user.beneficiary.id } : {})
           };
         } catch (error) {
           console.error("Erreur d'authentification:", error);
+          return null;
+        }
+      }
+    }),
+    // Provider pour l'authentification faciale
+    CredentialsProvider({
+      id: "face-recognition",
+      name: "Face Recognition",
+      credentials: {
+        faceEmbedding: { label: "Face Embedding", type: "text" },
+        searchMode: { label: "Search Mode", type: "text" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.faceEmbedding) {
+          return null;
+        }
+
+        try {
+          // Convertir le JSON de l'embedding en objet
+          const faceEmbedding = JSON.parse(credentials.faceEmbedding);
+          const searchMode = credentials.searchMode === "true";
+          
+          // Récupérer tous les embeddings des bénéficiaires
+          const allEmbeddings = await prisma.faceEmbedding.findMany({
+            include: {
+              beneficiary: {
+                include: {
+                  user: true
+                }
+              }
+            }
+          });
+
+          // Si en mode recherche, on retourne simplement les meilleurs matchs
+          if (searchMode) {
+            // C'est géré séparément par l'API /api/beneficiary/search-by-face
+            return null;
+          }
+
+          // Sinon, chercher le meilleur match avec un seuil de confiance
+          const bestMatch = await compareFaceEmbeddings(faceEmbedding, allEmbeddings);
+          
+          if (!bestMatch) {
+            return null;
+          }
+
+          const { user, beneficiary } = bestMatch.beneficiary;
+
+          // Vérifier si le compte est actif
+          if (user.accountStatus !== "active") {
+            throw new Error("Compte non activé ou bloqué");
+          }
+
+          // Mettre à jour la date de dernière connexion
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { lastLogin: new Date() },
+          });
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: `${beneficiary.firstName} ${beneficiary.lastName}`,
+            userType: user.userType,
+            accountStatus: user.accountStatus,
+            beneficiaryId: beneficiary.id
+          };
+        } catch (error) {
+          console.error("Erreur d'authentification faciale:", error);
           return null;
         }
       }
@@ -79,10 +154,13 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.email = user.email;
         token.name = user.name;
-        token.role = user.role;
-        if (user.role === "admin") {
-          token.accessLevel = user.accessLevel;
-        }
+        token.userType = user.userType;
+        token.accountStatus = user.accountStatus;
+        
+        // Ajouter les IDs spécifiques aux rôles
+        if (user.adminId) token.adminId = user.adminId;
+        if (user.volunteerId) token.volunteerId = user.volunteerId;
+        if (user.beneficiaryId) token.beneficiaryId = user.beneficiaryId;
       }
       return token;
     },
@@ -91,10 +169,13 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.email = token.email as string;
         session.user.name = token.name as string;
-        session.user.role = token.role as string;
-        if (token.accessLevel) {
-          session.user.accessLevel = token.accessLevel as string;
-        }
+        session.user.userType = token.userType as string;
+        session.user.accountStatus = token.accountStatus as string;
+        
+        // Ajouter les IDs spécifiques aux rôles
+        if (token.adminId) session.user.adminId = token.adminId as string;
+        if (token.volunteerId) session.user.volunteerId = token.volunteerId as string;
+        if (token.beneficiaryId) session.user.beneficiaryId = token.beneficiaryId as string;
       }
       return session;
     },

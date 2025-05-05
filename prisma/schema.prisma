@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,180 +7,175 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Modèle pour tous les utilisateurs (table commune)
+// Utilisateur générique
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
+  id            String     @id @default(uuid())
+  email         String     @unique
   password      String
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
   lastLogin     DateTime?
-  accountStatus String    @default("pending") // "active", "pending", "blocked"
-  userType      String    // "admin", "volunteer", "beneficiary"
+  accountStatus String     @default("pending") // "active", "pending", "blocked"
+  userType      String     // "admin", "volunteer", "beneficiary"
 
   // Relations
-  admin       Admin?
-  volunteer   Volunteer?
-  beneficiary Beneficiary?
+  admin         Admin?
+  volunteer     Volunteer?
+  beneficiary   Beneficiary?
 
   @@map("users")
 }
 
-// Modèle pour les administrateurs
+// Administrateur
 model Admin {
-  id          String  @id @default(uuid())
-  firstName   String
-  lastName    String
-  phone       String?
-  accessLevel String  @default("local_admin") // "super_admin", "regional_admin", "local_admin"
-  
+  id        String   @id @default(uuid())
+  firstName String
+  lastName  String
+  phone     String?
+
   // Relation avec User
-  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      String  @unique
-  
-  // Relations avec les entités gérées
-  managedRegionId String?
-  region         Region?  @relation(fields: [managedRegionId], references: [id])
-  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String   @unique
+
+  // Documents ajoutés pour le RAG
+  documents KnowledgeDocument[]
+
   @@map("administrators")
 }
 
-// Modèle pour les bénévoles
+// Bénévole
 model Volunteer {
-  id              String   @id @default(uuid())
+  id              String     @id @default(uuid())
   firstName       String
   lastName        String
   birthDate       DateTime
   phone           String
-  experience      Int?     @default(0) // années d'expérience
-  skills          Json?    // compétences (langues, expertises...)
-  availability    Json?    // disponibilités
-  trainings       Json?    // formations suivies
-  specializations Json?    // domaines de spécialisation
-  verified        Boolean  @default(false)
-  
-  // Relation avec User
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId          String   @unique
-  
-  // Relation avec l'antenne locale
-  localUnitId     String?
-  localUnit       LocalUnit? @relation(fields: [localUnitId], references: [id])
-  
-  // Relation avec les diagnostics réalisés
+  experience      Int?       @default(0)
+  skills          Json?
+  availability    Json?
+  trainings       Json?
+  specializations Json?
+  verified        Boolean    @default(false)
+
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String     @unique
+
   diagnostics     Diagnostic[]
-  
+
   @@map("volunteers")
 }
 
-// Modèle pour les bénéficiaires
+// Bénéficiaire
 model Beneficiary {
-  id                   String   @id @default(uuid())
-  firstName            String
-  lastName             String
-  birthDate            DateTime
-  phone                String?
-  address              String?
-  city                 String?
-  postalCode           String?
-  familySituation      String?  // "single", "couple", "family"...
-  householdSize        Int?     @default(1)
-  professionalSituation String? // "employed", "unemployed", "student"...
-  housingType          String?  // "owner", "tenant", "homeless"...
-  monthlyIncome        Int?
-  priorityNeeds        Json?    // besoins prioritaires
-  
-  // Relation avec User
-  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId               String   @unique
-  
-  // Relation avec les diagnostics reçus
-  diagnostics          Diagnostic[]
-  
-  // Relation avec les aides reçues
-  aids                 BeneficiaryAid[]
-  
+  id                    String           @id @default(uuid())
+  firstName             String
+  lastName              String
+  birthDate             DateTime
+  phone                 String?
+  address               String?
+  city                  String?
+  postalCode            String?
+  familySituation       String?
+  householdSize         Int?             @default(1)
+  professionalSituation String?
+  housingType           String?
+  monthlyIncome         Int?
+  priorityNeeds         Json?
+  photoUrl              String?
+
+  user                  User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                String           @unique
+
+  diagnostics           Diagnostic[]
+  aids                  BeneficiaryAid[]
+  faceEmbedding         FaceEmbedding?
+
   @@map("beneficiaries")
 }
 
-// Modèle pour les régions
-model Region {
-  id       String     @id @default(uuid())
-  name     String
-  
-  // Relations
-  admins   Admin[]
-  localUnits LocalUnit[]
-  
-  @@map("regions")
-}
-
-// Modèle pour les antennes locales
-model LocalUnit {
-  id          String   @id @default(uuid())
-  name        String
-  address     String
-  city        String
-  postalCode  String
-  contactEmail String?
-  contactPhone String?
-  
-  // Relation avec la région
-  regionId    String
-  region      Region   @relation(fields: [regionId], references: [id])
-  
-  // Relation avec les bénévoles
-  volunteers  Volunteer[]
-  
-  @@map("local_units")
-}
-
-// Modèle pour les diagnostics
+// Diagnostic
 model Diagnostic {
-  id              String   @id @default(uuid())
-  diagnosticDate  DateTime @default(now())
-  status          String   @default("pending") // "pending", "in_progress", "completed", "follow_up"
-  results         Json?    // résultats du diagnostic
-  recommendations Json?    // recommandations
-  nextSteps       String?  // prochaines étapes
-  
-  // Relations
+  id              String    @id @default(uuid())
+  diagnosticDate  DateTime  @default(now())
+  status          String    @default("pending") // "pending", "in_progress", "completed", "follow_up"
+  formResponses   Json?
+  results         Json?
+  recommendations Json?
+  suggestedAids   Json?
+  nextSteps       String?
+  pdfUrl          String?
+  version         String?
+
   beneficiaryId   String
   beneficiary     Beneficiary @relation(fields: [beneficiaryId], references: [id])
-  
+
   volunteerId     String?
-  volunteer       Volunteer? @relation(fields: [volunteerId], references: [id])
-  
+  volunteer       Volunteer?  @relation(fields: [volunteerId], references: [id])
+
   @@map("diagnostics")
 }
 
-// Modèle pour les types d'aide disponibles
+// Diagnostic sans compte
+model AnonymousDiagnostic {
+  id              String   @id @default(uuid())
+  diagnosticDate  DateTime @default(now())
+  formResponses   Json
+  results         Json?
+  recommendations Json?
+  suggestedAids   Json?
+  nextSteps       String?
+  pdfUrl          String?
+  version         String?
+}
+
+// Aide disponible
 model AidType {
-  id                 String   @id @default(uuid())
-  name               String
-  description        String
-  eligibilityCriteria Json?   // critères d'éligibilité
-  
-  // Relations avec les aides accordées
-  beneficiaryAids    BeneficiaryAid[]
-  
+  id                  String            @id @default(uuid())
+  name                String
+  description         String
+  eligibilityCriteria Json?
+
+  beneficiaryAids     BeneficiaryAid[]
+
   @@map("aid_types")
 }
 
-// Modèle pour les liens entre bénéficiaires et aides
+// Aide attribuée à un bénéficiaire
 model BeneficiaryAid {
-  id           String   @id @default(uuid())
-  status       String   @default("requested") // "requested", "approved", "rejected", "provided"
-  requestDate  DateTime @default(now())
+  id           String     @id @default(uuid())
+  status       String     @default("requested") // "requested", "approved", "rejected", "provided"
+  requestDate  DateTime   @default(now())
   decisionDate DateTime?
   notes        String?
-  
-  // Relations
+
   beneficiaryId String
   beneficiary   Beneficiary @relation(fields: [beneficiaryId], references: [id])
-  
+
   aidTypeId     String
   aidType       AidType     @relation(fields: [aidTypeId], references: [id])
-  
+
   @@map("beneficiary_aids")
+}
+
+// Embedding facial (Face ID)
+model FaceEmbedding {
+  id             String      @id @default(uuid())
+  beneficiaryId  String      @unique
+  embedding      Json
+  imageUrl       String
+  createdAt      DateTime    @default(now())
+
+  beneficiary    Beneficiary @relation(fields: [beneficiaryId], references: [id])
+}
+
+// Documents pour le chatbot (RAG)
+model KnowledgeDocument {
+  id          String   @id @default(uuid())
+  title       String
+  content     String
+  tags        String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  uploadedBy  String?
+  admin       Admin?   @relation(fields: [uploadedBy], references: [id])
 }

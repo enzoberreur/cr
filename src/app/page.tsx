@@ -33,8 +33,13 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center">
                 <div className="p-8 bg-white/90 rounded-lg shadow-lg text-center">
                   <div className="mx-auto mb-4 relative h-16 w-16">
-                    <div className="absolute inset-0 bg-red-600 rounded-sm rotate-45"></div>
-                    <div className="absolute inset-0 bg-red-600 rounded-sm"></div>
+                    <Image
+                      src="/logo.svg"
+                      alt="Logo Croix-Rouge"
+                      fill
+                      className="object-contain"
+                      priority
+                    />
                   </div>
                   <h3 className="font-bold text-lg">Le Cœur sur la Main</h3>
                   <p className="text-sm text-neutral-600 mt-2">Trouvez l'aide dont vous avez besoin</p>
