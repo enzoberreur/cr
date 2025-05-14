@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -25,14 +25,6 @@ export default function ChangePasswordPage() {
   const { data: session, status } = useSession({ required: true });
   const router = useRouter();
 
-  // Vérification de l'authentification
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    }
-  }, [status, router]);
-
-  // Fonction pour valider le formulaire
   const validateForm = () => {
     if (!currentPassword) {
       setError("Veuillez saisir votre mot de passe actuel");
@@ -87,12 +79,9 @@ export default function ChangePasswordPage() {
         throw new Error(data.error || "Une erreur est survenue");
       }
       
-      // Mot de passe changé avec succès
       setSuccess(true);
       
-      // Rediriger vers le tableau de bord après 2 secondes
       setTimeout(() => {
-        // Rediriger vers le tableau de bord correspondant au type d'utilisateur
         if (session?.user?.userType === "VOLUNTEER") {
           router.push("/volunteer/dashboard");
         } else if (session?.user?.userType === "ADMIN") {
