@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 // Récupère les détails d'un bénéficiaire spécifique
 export async function GET(
   req: NextRequest,
-  context: any
+  context: { params: { id: string } }
 ) {
   try {
     // Vérification de l'authentification

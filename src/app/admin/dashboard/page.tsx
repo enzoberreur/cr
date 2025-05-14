@@ -48,7 +48,7 @@ export default function AdminDashboard() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <Loader2 className="h-16 w-16 text-[#E2001A] mx-auto animate-spin" />
-          <h2 className="mt-4 text-xl font-semibold">Chargement du tableau de bord administrateur...</h2>
+          <h2 className="mt-4 text-xl font-semibold">Chargement du tableau de bord administrateur&hellip;</h2>
         </div>
       </div>
     );
@@ -72,7 +72,7 @@ export default function AdminDashboard() {
       <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="grid w-full grid-cols-3 bg-muted">
           <TabsTrigger value="overview">
-            <FileText className="w-4 h-4 mr-2" /> Vue d'ensemble
+            <FileText className="w-4 h-4 mr-2" /> Vue d&apos;ensemble
           </TabsTrigger>
           <TabsTrigger value="users">
             <Users className="w-4 h-4 mr-2" /> Gestion des utilisateurs

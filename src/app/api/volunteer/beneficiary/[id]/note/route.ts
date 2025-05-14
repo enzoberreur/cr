@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 // Récupère la note privée d'un bénéficiaire pour le bénévole connecté
 export async function GET(
   req: NextRequest,
-  context: any
+  context: { params: { id: string } }
 ) {
   try {
     const id = context.params.id;
@@ -77,7 +77,7 @@ export async function GET(
 // Crée ou met à jour une note privée pour un bénéficiaire
 export async function POST(
   req: NextRequest,
-  context: any
+  context: { params: { id: string } }
 ) {
   try {
     const id = context.params.id;

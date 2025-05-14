@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 // Récupère le PDF d'un diagnostic spécifique
 export async function GET(
   req: NextRequest,
-  context: any
+  context: { params: { id: string } }
 ) {
   try {
     const id = context.params.id;

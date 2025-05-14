@@ -6,7 +6,7 @@ import { authOptions } from "@/lib/auth";
 // GET: Récupérer un document spécifique
 export async function GET(
   request: Request,
-  context: any
+  context: { params: { id: string } }
 ) {
   try {
     // Vérifier l'authentification
@@ -68,7 +68,7 @@ export async function GET(
 // PUT: Mettre à jour un document existant
 export async function PUT(
   request: NextRequest,
-  context: any
+  context: { params: { id: string } }
 ) {
   try {
     // Vérifier l'authentification
@@ -147,7 +147,7 @@ export async function PUT(
 // DELETE: Supprimer un document
 export async function DELETE(
   request: NextRequest,
-  context: any
+  context: { params: { id: string } }
 ) {
   try {
     // Vérifier l'authentification

@@ -5,7 +5,7 @@ import { authOptions } from "@/lib/auth";
 
 export async function DELETE(
   request: NextRequest,
-  context: any
+  context: { params: { id: string } }
 ) {
   try {
     const id = context.params.id;
