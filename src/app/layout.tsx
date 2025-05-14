@@ -3,7 +3,6 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { Providers } from "@/components/providers";
-import { AuthDebuggerWrapper } from "@/components/auth-debugger-wrapper";
 
 export const metadata: Metadata = {
   title: "Croix-Rouge Française - Diagnostic Social",

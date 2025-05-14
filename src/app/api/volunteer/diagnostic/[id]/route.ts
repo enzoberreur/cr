@@ -62,7 +62,7 @@ export async function GET(
 // Met à jour un diagnostic existant
 export async function PUT(
   req: NextRequest,
-  context: any
+  context: { params: { id: string } }
 ) {
   try {
     // Vérification de l'authentification
