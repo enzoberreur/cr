@@ -1,8 +1,6 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter, usePathname } from "next/navigation";
-import { useEffect } from "react";
 
 export default function AuthLayout({
   children,
@@ -10,8 +8,6 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   const { status } = useSession();
-  const router = useRouter();
-  const pathname = usePathname();
 
   if (status === "loading") {
     return (

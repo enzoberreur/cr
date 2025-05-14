@@ -17,7 +17,7 @@ interface DiagnosticResult {
 }
 
 export default function ResultatsPage() {
-  const [diagnosticData, setDiagnosticData] = useState<any>(null);
+  const [diagnosticData, setDiagnosticData] = useState<unknown>(null);
   const [result, setResult] = useState<DiagnosticResult | null>(null);
 
   useEffect(() => {
@@ -62,11 +62,7 @@ export default function ResultatsPage() {
       color: rgb(0, 0, 0),
     });
 
-    const lines = result.summary
-      .split("\n")
-      .flatMap((line) => 
-        font.wrapTextLines(line, width - 100)
-      );
+    const lines = result.summary.split("\n");
 
     let currentY = height - 150;
     for (const line of lines) {
@@ -225,7 +221,7 @@ export default function ResultatsPage() {
           <CardTitle>Résumé de votre situation</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="whitespace-pre-line">{result.summary}</p>
+          <p className="whitespace-pre-line">{result.summary.replace(/'/g, "&apos;")}</p>
         </CardContent>
       </Card>
 
@@ -237,7 +233,7 @@ export default function ResultatsPage() {
         <CardContent>
           <ul className="list-disc list-inside space-y-2">
             {result.recommendations.map((rec, index) => (
-              <li key={index} className="text-gray-700">{rec}</li>
+              <li key={index} className="text-gray-700">{rec.replace(/'/g, "&apos;")}</li>
             ))}
           </ul>
         </CardContent>
@@ -251,7 +247,7 @@ export default function ResultatsPage() {
         <CardContent>
           <ul className="list-disc list-inside space-y-2">
             {result.suggestions.map((sugg, index) => (
-              <li key={index} className="text-gray-700">{sugg}</li>
+              <li key={index} className="text-gray-700">{sugg.replace(/'/g, "&apos;")}</li>
             ))}
           </ul>
         </CardContent>
@@ -273,7 +269,7 @@ export default function ResultatsPage() {
 
       <div className="mt-8 p-4 bg-gray-50 rounded-lg text-sm text-gray-600 text-center">
         <p>
-          Ce diagnostic n'est pas enregistré et sera perdu si vous fermez cette page.
+          Ce diagnostic n&apos;est pas enregistré et sera perdu si vous fermez cette page.
           Créez un compte pour le sauvegarder et accéder à un suivi personnalisé.
         </p>
       </div>

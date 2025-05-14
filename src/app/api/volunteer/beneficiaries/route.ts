@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     const order = searchParams.get("order") || "asc";
     
     // Construire la requête avec les filtres
-    let whereClause: any = {
+    const whereClause: Record<string, unknown> = {
       volunteers: {
         userId: session.user.id,
       },

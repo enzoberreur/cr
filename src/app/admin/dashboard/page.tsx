@@ -3,16 +3,13 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
 import { 
-  Users, FileText, Settings, Book, Trash2, Edit, Plus, Search, FileEdit,
-  MoreHorizontal, UserPlus, ChevronLeft, ChevronRight, AlertCircle, Loader2
+  Users, FileText, Book, Plus, Search,
+  UserPlus, Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 
 // Composants de tableau de bord
@@ -25,7 +22,6 @@ import MinimalVolunteerForm from "@/components/admin/minimal-volunteer-form"; //
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [refreshUsersTrigger, setRefreshUsersTrigger] = useState(0);
   const router = useRouter();
   
@@ -45,17 +41,6 @@ export default function AdminDashboard() {
       router.push("/login");
     }
   }, [session, router]);
-  
-  // Simuler le chargement des données
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (status === 'authenticated') {
-        setIsLoading(false);
-      }
-    }, 1000);
-    
-    return () => clearTimeout(timer);
-  }, [status]);
   
   // Afficher un écran de chargement pendant la vérification d'authentification
   if (status === "loading" || (status === "authenticated" && session?.user?.userType !== "ADMIN")) {

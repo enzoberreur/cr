@@ -22,7 +22,7 @@ export default function ChangePasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const { data: session, status } = useSession({ required: true });
+  const { data: session } = useSession({ required: true });
   const router = useRouter();
 
   const validateForm = () => {

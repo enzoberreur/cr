@@ -20,7 +20,7 @@ export default function DiagnosticAnonymePage() {
         
         <h1 className="text-4xl font-bold tracking-tight mb-4">Diagnostic social anonyme</h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Ce questionnaire vous permettra d'évaluer votre situation et d'obtenir des 
+          Ce questionnaire vous permettra d&apos;évaluer votre situation et d&apos;obtenir des 
           recommandations personnalisées. Vos réponses ne seront pas sauvegardées 
           sans votre consentement.
         </p>

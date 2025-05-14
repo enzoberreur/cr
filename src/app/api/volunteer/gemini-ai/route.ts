@@ -169,9 +169,6 @@ export async function POST(req: NextRequest) {
     
     // Prendre tous les documents pertinents par ordre de score
     const relevantDocs = scoredDocuments;
-    const context = relevantDocs.map((doc, index) => 
-      `Document ${index + 1}:\nTitre: ${doc.title}\nContenu: ${doc.content}\nTags: ${doc.tags.join(', ')}\n\n`
-    ).join("");
 
     // Créer le modèle avec des paramètres de sécurité
     const model = genAI.getGenerativeModel({
