@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Copy, CheckCircle } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -18,14 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { FormLabel } from "@/components/ui/form";
 
 // Types pour les props du composant
 interface User {
@@ -39,7 +33,28 @@ interface User {
   lastLogin?: string | null;
 }
 
-interface UserFormDialogProps {
+// Fonction pour générer un mot de passe aléatoire
+const generateRandomPassword = (length = 10) => {
+  const charset = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+  let password = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * charset.length);
+    password += charset[randomIndex];
+  }
+  return password;
+};
+
+// Définir un type pour s'assurer que formData a la structure correcte
+interface FormDataType {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  userType: "ADMIN" | "VOLUNTEER" | "BENEFICIARY";
+  status: "ACTIVE" | "PENDING" | "BLOCKED";
+}
+
+interface UserFormDialogFixedProps {
   isOpen?: boolean;
   onClose?: () => void;
   open?: boolean;
@@ -48,57 +63,61 @@ interface UserFormDialogProps {
   onSave?: (user: User) => void;
 }
 
-export default function UserFormDialog({ isOpen, onClose, open, onOpenChange, user = null, onSave }: UserFormDialogProps) {
-  // Compatibilité avec les deux styles de props (open/onOpenChange et isOpen/onClose)
-  const dialogOpen = isOpen !== undefined ? isOpen : open;
-  const handleClose = () => {
-    if (onClose) onClose();
-    if (onOpenChange) onOpenChange(false);
-  };
-  
-  // Définir un type pour s'assurer que formData a la structure correcte
-  interface FormDataType {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-    userType: "ADMIN" | "VOLUNTEER" | "BENEFICIARY";
-    status: "ACTIVE" | "PENDING" | "BLOCKED";
+export default function UserFormDialogFixed(props: UserFormDialogFixedProps) {
+  // Vérifier que props n'est pas undefined/null
+  if (!props) {
+    throw new Error("Props is undefined or null");
   }
+
+  // Extraire les props de manière sécurisée avec des valeurs par défaut explicites
+  const isOpen = props.isOpen ?? false;
+  const onClose = props.onClose ?? (() => {});
+  const open = props.open ?? false;
+  const onOpenChange = props.onOpenChange;
+  const user = props.user ?? null;
+  const onSave = props.onSave;
   
+  // Compatibilité avec les deux styles de props (open/onOpenChange et isOpen/onClose)
+  const dialogOpen = isOpen !== undefined ? isOpen : (open || false);
+  
+  const [passwordCopied, setPasswordCopied] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // État du formulaire avec des valeurs par défaut sécurisées
   const [formData, setFormData] = useState<FormDataType>({
     firstName: "",
     lastName: "",
     email: "",
-    password: "",
-    userType: "BENEFICIARY",
+    password: generateRandomPassword(),
+    userType: "VOLUNTEER", // Par défaut, c'est un bénévole
     status: "ACTIVE",
   });
-  const [isLoading, setIsLoading] = useState(false);
 
-  // Pré-remplir le formulaire si un utilisateur est fourni pour modification
+  // Fonction de fermeture de la boîte de dialogue
+  const handleClose = () => {
+    if (onClose) onClose();
+    if (onOpenChange) onOpenChange(false);
+  };
+
+  // Réinitialise le formulaire lorsque l'utilisateur change ou lorsque le dialogue s'ouvre
   useEffect(() => {
-    if (user) {
-      setFormData({
-        firstName: user.firstName || "",
-        lastName: user.lastName || "",
-        email: user.email || "",
-        password: "", // Ne pas pré-remplir le mot de passe pour des raisons de sécurité
-        userType: user.userType || "BENEFICIARY",
-        status: user.status || "ACTIVE",
-      });
-    } else {
-      // Réinitialiser le formulaire pour un nouvel utilisateur
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        userType: "BENEFICIARY",
-        status: "ACTIVE",
-      });
-    }
-  }, [user, dialogOpen]);
+    // S'assurer que user est bien défini avant d'accéder à ses propriétés
+    const firstName = user && user.firstName ? user.firstName : "";
+    const lastName = user && user.lastName ? user.lastName : "";
+    const email = user && user.email ? user.email : "";
+    const userType = user && user.userType ? user.userType : "VOLUNTEER";
+    const status = user && user.status ? user.status : "ACTIVE";
+    
+    setFormData({
+      firstName,
+      lastName,
+      email,
+      password: user ? "" : generateRandomPassword(),
+      userType: userType as "ADMIN" | "VOLUNTEER" | "BENEFICIARY",
+      status: status as "ACTIVE" | "PENDING" | "BLOCKED",
+    });
+    setPasswordCopied(false);
+  }, [user, dialogOpen]); // Ajout de dialogOpen pour s'assurer que le formulaire est réinitialisé lorsque le dialogue est ouvert
 
   const handleChange = (field: string, value: string) => {
     setFormData({
@@ -127,8 +146,8 @@ export default function UserFormDialog({ isOpen, onClose, open, onOpenChange, us
             email: formData.email,
             firstName: formData.firstName,
             lastName: formData.lastName,
-            userType: formData.userType,
-            status: formData.status,
+            userType: formData.userType as "ADMIN" | "VOLUNTEER" | "BENEFICIARY",
+            status: formData.status as "ACTIVE" | "PENDING" | "BLOCKED",
             createdAt: user.createdAt,
             lastLogin: user.lastLogin
           };
@@ -145,10 +164,14 @@ export default function UserFormDialog({ isOpen, onClose, open, onOpenChange, us
             email: formData.email,
             firstName: formData.firstName,
             lastName: formData.lastName,
-            userType: formData.userType,
-            status: formData.status,
-            password: formData.password
-          } as User;
+            userType: formData.userType as "ADMIN" | "VOLUNTEER" | "BENEFICIARY",
+            status: formData.status as "ACTIVE" | "PENDING" | "BLOCKED",
+          };
+          
+          // Ajouter le mot de passe seulement s'il existe
+          if (formData.password) {
+            (newUser as any).password = formData.password;
+          }
           
           onSave(newUser);
         }
@@ -162,8 +185,20 @@ export default function UserFormDialog({ isOpen, onClose, open, onOpenChange, us
     }
   };
 
+  // Fonction pour copier le mot de passe dans le presse-papiers
+  const handleCopyPassword = () => {
+    navigator.clipboard.writeText(formData.password);
+    setPasswordCopied(true);
+    setTimeout(() => setPasswordCopied(false), 2000);
+  };
+
+  // Conditionnellement rendre le Dialog uniquement s'il doit être affiché
+  if (!dialogOpen) {
+    return null; // Ne rien rendre si le dialogue n'est pas ouvert
+  }
+  
   return (
-    <Dialog open={dialogOpen} onOpenChange={handleClose}>
+    <Dialog open={true} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>{user ? "Modifier l'utilisateur" : "Ajouter un utilisateur"}</DialogTitle>
@@ -215,14 +250,35 @@ export default function UserFormDialog({ isOpen, onClose, open, onOpenChange, us
             <FormLabel htmlFor="password">
               {user ? "Nouveau mot de passe (facultatif)" : "Mot de passe"}
             </FormLabel>
-            <Input
-              id="password"
-              type="password"
-              value={formData.password}
-              onChange={(e) => handleChange("password", e.target.value)}
-              placeholder={user ? "Laisser vide pour ne pas modifier" : "Mot de passe"}
-              required={!user} // Requis uniquement pour les nouveaux utilisateurs
-            />
+            <div className="flex gap-2">
+              <Input
+                id="password"
+                type="text" // Utilisez text au lieu de password pour pouvoir voir et copier
+                value={formData.password}
+                onChange={(e) => handleChange("password", e.target.value)}
+                placeholder={user ? "Laisser vide pour ne pas modifier" : "Mot de passe"}
+                required={!user} // Requis uniquement pour les nouveaux utilisateurs
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={handleCopyPassword}
+                className="flex-shrink-0"
+                title="Copier le mot de passe"
+              >
+                {passwordCopied ? (
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+            {!user && (
+              <p className="text-xs text-gray-500 mt-1">
+                Un mot de passe aléatoire a été généré. Vous pouvez le copier ou le modifier.
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">

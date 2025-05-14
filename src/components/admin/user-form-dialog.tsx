@@ -60,7 +60,21 @@ const generateRandomPassword = (length: number = 10): string => {
   return password;
 };
 
-export default function UserFormDialog({ isOpen, onClose, open, onOpenChange, user = null, onSave }: UserFormDialogProps) {
+export default function UserFormDialog(props: UserFormDialogProps) {
+  try {
+    // Vérifier que props n'est pas undefined/null avant de le déstructurer
+    if (!props) {
+      throw new Error("Props is undefined or null");
+    }
+
+    // Extraire les props de manière sécurisée avec des valeurs par défaut explicites
+    const isOpen = props.isOpen ?? false;
+    const onClose = props.onClose ?? (() => {});
+    const open = props.open ?? false;
+    const onOpenChange = props.onOpenChange;
+    const user = props.user ?? null;
+    const onSave = props.onSave;
+  
   // Compatibilité avec les deux styles de props (open/onOpenChange et isOpen/onClose)
   const dialogOpen = isOpen !== undefined ? isOpen : (open || false);
   const handleClose = () => {
@@ -95,17 +109,27 @@ export default function UserFormDialog({ isOpen, onClose, open, onOpenChange, us
 
   // Pré-remplir le formulaire si un utilisateur est fourni pour modification
   useEffect(() => {
-    // Réinitialiser le formulaire lorsque la boîte de dialogue s'ouvre ou lorsque l'utilisateur change
+    // Pour déboguer: afficher les valeurs qui peuvent causer une erreur de déstructuration
+    console.log("Dialog opened:", dialogOpen);
+    console.log("User object:", user);
+    
+    // Réinitialiser le formulaire lorsque la boîte de dialogue s'ouvre
     if (dialogOpen) {
       if (user) {
-        // Pour un utilisateur existant
+        // Pour un utilisateur existant - éviter la déstructuration directe
+        const firstName = user.firstName !== undefined ? user.firstName : "";
+        const lastName = user.lastName !== undefined ? user.lastName : "";
+        const email = user.email !== undefined ? user.email : "";
+        const userType = user.userType !== undefined ? user.userType : "BENEFICIARY";
+        const userStatus = user.status !== undefined ? user.status : "ACTIVE";
+        
         setFormData({
-          firstName: user.firstName || "",
-          lastName: user.lastName || "",
-          email: user.email || "",
+          firstName,
+          lastName,
+          email,
           password: "", // Ne pas pré-remplir le mot de passe pour des raisons de sécurité
-          userType: user.userType || "BENEFICIARY",
-          status: user.status || "ACTIVE",
+          userType,
+          status: userStatus,
         });
       } else {
         // Pour un nouvel utilisateur (bénévole)
@@ -121,7 +145,7 @@ export default function UserFormDialog({ isOpen, onClose, open, onOpenChange, us
         setPasswordCopied(false);
       }
     }
-  }, [user, dialogOpen]);
+  }, [dialogOpen, user]);
 
   const handleChange = (field: string, value: string) => {
     setFormData({
@@ -164,18 +188,22 @@ export default function UserFormDialog({ isOpen, onClose, open, onOpenChange, us
       // Pour les utilisateurs existants
       if (onSave) {
         if (user) {
+          // Pour une modification, vérifier l'existence de chaque propriété de façon sécurisée
+          const userId = typeof user.id === 'string' ? user.id : '';
+          const createdAtStr = typeof user.createdAt === 'string' ? user.createdAt : new Date().toISOString();
+          
           // Pour une modification, créer un nouvel objet avec les propriétés préservées
           const updatedUser: User = {
-            // Assurer que l'ID est toujours défini, même s'il est undefined dans l'objet user
-            id: user.id || '',
+            // Assurer que l'ID est toujours défini
+            id: userId,
             email: formData.email,
             firstName: formData.firstName,
             lastName: formData.lastName,
             userType: formData.userType,
             status: formData.status,
-            // Éviter les problèmes de déstructuration en utilisant des valeurs par défaut explicites
-            createdAt: user.createdAt || new Date().toISOString(),
-            lastLogin: user.lastLogin || null
+            // Utiliser des valeurs par défaut explicites
+            createdAt: createdAtStr,
+            lastLogin: null // Simplifier en mettant toujours null par défaut
           };
           
           // Ajouter le mot de passe uniquement s'il est fourni
@@ -370,4 +398,8 @@ export default function UserFormDialog({ isOpen, onClose, open, onOpenChange, us
       </DialogContent>
     </Dialog>
   );
+  } catch (error) {
+    console.error("Erreur dans le composant UserFormDialog:", error);
+    return null;
+  }
 }

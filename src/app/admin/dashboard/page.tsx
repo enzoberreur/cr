@@ -19,13 +19,14 @@ import { Input } from "@/components/ui/input";
 import UsersTable from "@/components/admin/users-table";
 import RAGManager from "@/components/admin/rag-manager";
 import StatsCards from "@/components/admin/stats-cards";
-import UserFormDialog from "@/components/admin/user-form-dialog";
+import MinimalVolunteerForm from "@/components/admin/minimal-volunteer-form"; // Utiliser une implémentation minimale qui évite tout problème de destructuration
 
 // Interrogez les données d'authentification et redirigez si l'utilisateur n'est pas un admin
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshUsersTrigger, setRefreshUsersTrigger] = useState(0);
   const router = useRouter();
   
   // Vérification d'authentification côté client
@@ -120,7 +121,7 @@ export default function AdminDashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              <UsersTable />
+              <UsersTable refreshTrigger={refreshUsersTrigger} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -130,15 +131,16 @@ export default function AdminDashboard() {
         </TabsContent>
       </Tabs>
       
-      {/* Formulaire popup pour ajouter/modifier un utilisateur */}
-      <UserFormDialog 
-        isOpen={isAddUserOpen} 
-        onClose={() => setIsAddUserOpen(false)}
-        user={null} // Explicitement définir user comme null pour un nouveau bénévole
-        onSave={(user) => {
-          // On pourrait ajouter ici une logique pour rafraîchir les données si nécessaire
-          console.log("Nouveau bénévole créé:", user);
+      {/* Formulaire minimal pour ajouter un bénévole - n'utilise pas du tout le composant Dialog */}
+      <MinimalVolunteerForm 
+        open={isAddUserOpen} 
+        onClose={() => setIsAddUserOpen(false)} 
+        onSave={(newUser) => {
+          console.log("Nouveau bénévole créé:", newUser);
+          // Fermer le dialogue
           setIsAddUserOpen(false);
+          // Déclencher un rafraîchissement de la liste des utilisateurs
+          setRefreshUsersTrigger(prev => prev + 1);
         }}
       />
     </div>
