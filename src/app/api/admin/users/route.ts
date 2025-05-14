@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma"; // Utiliser l'instance singleton de Prisma
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { hash } from "bcrypt";
+import { randomUUID } from "crypto";
 
 export async function GET() {
   try {
@@ -96,6 +98,114 @@ export async function GET() {
         headers: {
           "Content-Type": "application/json",
         },
+      }
+    );
+  }
+}
+
+// POST: Créer un nouvel utilisateur (bénévole par défaut)
+export async function POST(request: Request) {
+  try {
+    // Vérifier l'authentification
+    const session = await getServerSession(authOptions);
+    
+    if (!session || session.user.userType !== "ADMIN") {
+      return new NextResponse(JSON.stringify({ error: "Non autorisé" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Obtenir les données du nouvel utilisateur
+    const data = await request.json();
+    const { firstName, lastName, email, password, userType = "VOLUNTEER", status = "ACTIVE" } = data;
+
+    // Vérifier si l'email existe déjà
+    const existingUser = await prisma.users.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      return new NextResponse(JSON.stringify({ error: "Cet email est déjà utilisé" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Hacher le mot de passe
+    const hashedPassword = await hash(password, 10);
+
+    // Générer des IDs uniques
+    const userId = randomUUID();
+    const profileId = randomUUID();
+
+    // Créer l'utilisateur
+    const user = await prisma.users.create({
+      data: {
+        id: userId,
+        email,
+        password: hashedPassword,
+        userType,
+        status,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+
+    // Créer le profil associé selon le type d'utilisateur
+    if (userType === "VOLUNTEER") {
+      await prisma.volunteers.create({
+        data: {
+          id: profileId,
+          firstName,
+          lastName,
+          userId: user.id,
+        },
+      });
+    } else if (userType === "BENEFICIARY") {
+      await prisma.beneficiaries.create({
+        data: {
+          id: profileId,
+          firstName,
+          lastName,
+          userId: user.id,
+        },
+      });
+    } else if (userType === "ADMIN") {
+      await prisma.admins.create({
+        data: {
+          id: profileId,
+          firstName,
+          lastName,
+          userId: user.id,
+        },
+      });
+    }
+
+    // Créer un objet utilisateur formaté pour la réponse
+    const formattedUser = {
+      id: user.id,
+      email: user.email,
+      firstName,
+      lastName,
+      userType: user.userType,
+      status: user.status,
+      createdAt: user.createdAt.toISOString(),
+      lastLogin: null,
+    };
+
+    return new NextResponse(JSON.stringify(formattedUser), {
+      status: 201,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    console.error("Erreur lors de la création de l'utilisateur:", error);
+    
+    return new NextResponse(
+      JSON.stringify({ error: "Erreur lors de la création de l'utilisateur" }),
+      { 
+        status: 500,
+        headers: { "Content-Type": "application/json" },
       }
     );
   }

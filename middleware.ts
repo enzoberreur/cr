@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { withAuth } from "next-auth/middleware";
 
+// Constantes pour les chemins spéciaux
+const CHANGE_PASSWORD_PATH = "/auth/change-password";
+const LOGIN_PATH = "/login";
+
 export default withAuth(
   function middleware(req) {
     const token = req.nextauth.token;
@@ -15,6 +19,9 @@ export default withAuth(
       return NextResponse.redirect(new URL("/login", req.url));
     }
     
+    // Vérifier si c'est la première connexion (normalement défini sur le token)
+    // Note: Dans une version complète, cette propriété serait stockée dans le token JWT
+    
     // Rediriger l'utilisateur vers son tableau de bord s'il accède à la racine ou à /login alors qu'il est déjà authentifié
     if ((path === "/" || path === "/login") && token.userType) {
       console.log("Utilisateur déjà authentifié, redirection vers son tableau de bord");
@@ -25,6 +32,9 @@ export default withAuth(
       }
       
       if (token.userType === "VOLUNTEER") {
+        // Note: Pour implémenter la redirection vers le changement de mot de passe,
+        // nous devons vérifier si le token contient isFirstLogin=true
+        // Dans cette version, on redirige simplement vers le tableau de bord
         console.log("Redirection bénévole vers /volunteer/dashboard");
         return NextResponse.redirect(new URL("/volunteer/dashboard", req.url));
       }
@@ -81,6 +91,7 @@ export const config = {
     "/admin/:path*", 
     "/volunteer/:path*", 
     "/beneficiary/:path*",
+    "/auth/:path*",  // Ajouter les routes d'authentification
     "/admin/dashboard",
     "/volunteer/dashboard",
     "/beneficiary/dashboard"

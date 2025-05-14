@@ -128,8 +128,8 @@ const emptyUser: User = {
     if (!selectedUser) return;
     
     try {
-      // Appel à l'API pour supprimer l'utilisateur
-      const response = await fetch(`/api/admin/users?id=${selectedUser.id}`, {
+      // Appel à l'API pour supprimer l'utilisateur (correction de l'URL)
+      const response = await fetch(`/api/admin/users/${selectedUser.id}`, {
         method: 'DELETE',
       });
       

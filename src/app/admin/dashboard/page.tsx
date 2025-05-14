@@ -79,7 +79,7 @@ export default function AdminDashboard() {
           onClick={() => setIsAddUserOpen(true)}
           className="bg-[#E2001A] hover:bg-[#C0001A] text-white"
         >
-          <UserPlus className="mr-2 h-4 w-4" /> Ajouter un utilisateur
+          <UserPlus className="mr-2 h-4 w-4" /> Ajouter un bénévole
         </Button>
       </div>
 
@@ -114,7 +114,7 @@ export default function AdminDashboard() {
                     onClick={() => setIsAddUserOpen(true)}
                     className="bg-[#E2001A] hover:bg-[#C0001A] text-white"
                   >
-                    <Plus className="mr-2 h-4 w-4" /> Ajouter
+                    <Plus className="mr-2 h-4 w-4" /> Ajouter un bénévole
                   </Button>
                 </div>
               </div>
@@ -133,7 +133,13 @@ export default function AdminDashboard() {
       {/* Formulaire popup pour ajouter/modifier un utilisateur */}
       <UserFormDialog 
         isOpen={isAddUserOpen} 
-        onClose={() => setIsAddUserOpen(false)} 
+        onClose={() => setIsAddUserOpen(false)}
+        user={null} // Explicitement définir user comme null pour un nouveau bénévole
+        onSave={(user) => {
+          // On pourrait ajouter ici une logique pour rafraîchir les données si nécessaire
+          console.log("Nouveau bénévole créé:", user);
+          setIsAddUserOpen(false);
+        }}
       />
     </div>
   );

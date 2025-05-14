@@ -5,11 +5,11 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-// Configurer l'instance de PrismaClient avec moins de logs en production
+// Configurer l'instance de PrismaClient avec moins de logs
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    log: ['error'], // N'affiche que les erreurs, supprime les logs de requêtes et d'avertissements
   });
 
 // Assigner l'instance à la variable globale uniquement en développement
