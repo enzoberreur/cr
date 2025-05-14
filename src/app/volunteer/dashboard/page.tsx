@@ -5,10 +5,22 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Calendar, UserCircle, Bell, MapPin, Clock } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Loader2, Clock, MapPin, Plus, Search, Camera, MessageSquareText } from "lucide-react";
+import { Input } from "@/components/ui/input";
+
+// Importation des composants personnalisés
+import { NavbarVolunteer } from "@/components/volunteer/navbar-volunteer";
+import { BeneficiariesTable } from "@/components/volunteer/beneficiaries-table";
+import { GeminiAiHelper } from "@/components/volunteer/gemini-ai-helper";
+import { VolunteerNotes } from "@/components/volunteer/volunteer-notes";
+import { BeneficiaryFormDialog } from "@/components/volunteer/beneficiary-form-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 export default function VolunteerDashboard() {
   const [isLoading, setIsLoading] = useState(true);
+  const [isBeneficiaryFormOpen, setIsBeneficiaryFormOpen] = useState(false);
+  const [isFaceSearchOpen, setIsFaceSearchOpen] = useState(false);
   const router = useRouter();
   
   // Vérification d'authentification côté client
@@ -28,7 +40,7 @@ export default function VolunteerDashboard() {
     }
   }, [session, router]);
   
-  // Simuler le chargement des données
+  // Charger les données
   useEffect(() => {
     const timer = setTimeout(() => {
       if (status === 'authenticated') {
@@ -51,121 +63,106 @@ export default function VolunteerDashboard() {
   }
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-1">Tableau de bord bénévole</h1>
-          <p className="text-gray-500">Bienvenue, {session?.user?.email || "Bénévole"}</p>
+    <div className="min-h-screen flex flex-col">
+      <NavbarVolunteer />
+      {/* Spacer élément pour compenser la hauteur de la navbar fixe */}
+      <div className="h-[64px] w-full"></div>
+      <div className="flex-1 bg-gray-50 p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
+        {/* En-tête avec titre et actions principales */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mt-2 md:mt-0">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Mes bénéficiaires</h1>
+            <p className="text-gray-500">
+              Gérez vos bénéficiaires et leurs diagnostics
+            </p>
+          </div>
+          <div className="flex gap-2 flex-wrap justify-end">
+            <Button 
+              variant="outline" 
+              className="gap-1" 
+              onClick={() => setIsFaceSearchOpen(true)}
+            >
+              <Camera className="h-4 w-4" />
+              <span>Rechercher par photo</span>
+            </Button>
+            <Button 
+              variant="outline"
+              className="gap-1 border-[#E2001A] text-[#E2001A] hover:bg-red-50"
+              onClick={() => setIsChatbotOpen(true)}
+            >
+              <MessageSquareText className="h-4 w-4" />
+              <span>Aide IA Gemini</span>
+            </Button>
+            <Button 
+              className="bg-[#E2001A] hover:bg-[#c0001a] gap-1" 
+              onClick={() => setIsBeneficiaryFormOpen(true)}
+            >
+              <Plus className="h-4 w-4" />
+              <span>Ajouter un bénéficiaire</span>
+            </Button>
+          </div>
         </div>
-        <div className="flex space-x-2">
-          <Button variant="outline" size="sm" className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            <span className="hidden sm:inline">Calendrier</span>
-          </Button>
-          <Button variant="outline" size="sm" className="flex items-center gap-2">
-            <Bell className="h-4 w-4" />
-            <span className="hidden sm:inline">Notifications</span>
-          </Button>
+        
+        {/* Zone de recherche et filtres */}
+        <div className="flex flex-col md:flex-row gap-2 items-end">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Rechercher par nom, téléphone ou email..."
+              className="pl-10 w-full"
+            />
+          </div>
         </div>
+        
+        {/* Tableau des bénéficiaires */}
+        <Card>
+          <CardContent className="p-0">
+            <BeneficiariesTable />
+          </CardContent>
+        </Card>
       </div>
       
-      <div className="bg-red-50 p-4 rounded-lg border border-red-100 mb-6">
-        <h2 className="font-medium text-lg text-[#E2001A] mb-2">Prochaine mission</h2>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <p className="font-medium text-gray-900">Distribution alimentaire</p>
-            <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-              <Clock className="h-4 w-4" />
-              <span>Jeudi 20 Octobre, 14h00-17h00</span>
+      {/* L'assistant Gemini IA est intégré en tant que composant flottant */}
+      <GeminiAiHelper />
+      
+      {/* Dialogue d'ajout de bénéficiaire */}
+      <BeneficiaryFormDialog 
+        open={isBeneficiaryFormOpen}
+        onOpenChange={setIsBeneficiaryFormOpen}
+        onSuccess={() => {
+          // Rafraîchir la liste des bénéficiaires
+          window.location.reload();
+        }}
+      />
+
+      {/* Dialogue de recherche par reconnaissance faciale */}
+      <Dialog open={isFaceSearchOpen} onOpenChange={setIsFaceSearchOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Recherche par reconnaissance faciale</DialogTitle>
+            <DialogDescription>
+              Utilisez votre webcam pour rechercher un bénéficiaire par son visage.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-md">
+            <div className="bg-gray-100 w-full aspect-video rounded-md flex items-center justify-center">
+              {/* Ici sera affiché le flux de la webcam */}
+              <Camera className="h-16 w-16 text-gray-400" />
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-              <MapPin className="h-4 w-4" />
-              <span>Centre-ville, 33 rue de la République</span>
-            </div>
+            <p className="text-sm text-gray-500 mt-2 text-center">
+              Assurez-vous que le visage de la personne est bien visible et éclairé.
+            </p>
+            <Button 
+              className="mt-4 bg-[#E2001A] hover:bg-[#c0001a]"
+            >
+              Prendre une photo
+            </Button>
           </div>
-          <Button className="bg-[#E2001A] hover:bg-[#C0001A] text-white">
-            Voir les détails
-          </Button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-        <Card>
-          <CardHeader className="bg-red-50 rounded-t-lg">
-            <CardTitle>Vos missions</CardTitle>
-            <CardDescription>
-              Consultez vos missions à venir
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <div className="space-y-4">
-              <div className="border-l-4 border-[#E2001A] pl-4 py-2">
-                <p className="text-sm text-gray-500">Jeudi 20 Octobre</p>
-                <p className="font-medium">Distribution alimentaire</p>
-                <p className="text-sm text-gray-600">14h00-17h00 • Centre-ville</p>
-              </div>
-              <div className="border-l-4 border-gray-300 pl-4 py-2">
-                <p className="text-sm text-gray-500">Samedi 22 Octobre</p>
-                <p className="font-medium">Formation premiers secours</p>
-                <p className="text-sm text-gray-600">09h00-18h00 • Salle Bordeaux</p>
-              </div>
-            </div>
-            <Button variant="outline" className="mt-6 w-full">Voir toutes mes missions</Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="bg-red-50 rounded-t-lg">
-            <CardTitle>Votre profil</CardTitle>
-            <CardDescription>
-              Informations personnelles
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-gray-500">Email</span>
-                <span className="font-medium">{session?.user?.email}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Statut</span>
-                <span className="font-medium">Bénévole actif</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-500">Formation</span>
-                <span className="font-medium">PSC1</span>
-              </div>
-            </div>
-            <Button variant="outline" className="mt-6 w-full">Modifier mon profil</Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="bg-red-50 rounded-t-lg">
-            <CardTitle>Actualités</CardTitle>
-            <CardDescription>
-              Restez informé des dernières actualités
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <div className="space-y-4">
-              <div>
-                <h4 className="font-medium">Nouvelle formation disponible</h4>
-                <p className="text-sm text-gray-600 mt-1">
-                  Une formation aux premiers secours pédiatriques sera organisée le mois prochain.
-                </p>
-              </div>
-              <div>
-                <h4 className="font-medium">Collecte de vêtements</h4>
-                <p className="text-sm text-gray-600 mt-1">
-                  Participez à notre collecte de vêtements pour l'hiver du 1er au 15 novembre.
-                </p>
-              </div>
-            </div>
-            <Button variant="outline" className="mt-6 w-full">Toutes les actualités</Button>
-          </CardContent>
-        </Card>
-      </div>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Le bouton flottant est maintenant géré directement dans le composant GeminiAiHelper */}
     </div>
   );
 }

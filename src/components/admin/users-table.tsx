@@ -33,7 +33,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import UserFormDialog from "./user-form-dialog-fixed";
+import UserFormDialogFixed from "./user-form-dialog-fixed";
+import EditUserDialog from "./edit-user-dialog";
 
 // Interface pour les utilisateurs
 interface User {
@@ -134,7 +135,10 @@ export default function UsersTable({ refreshTrigger = 0 }: UsersTableProps) {
 
   // Fonction pour gérer la mise à jour d'un utilisateur
   const handleUpdateUser = async (updatedUser: User) => {
+    console.log("handleUpdateUser appelé avec:", updatedUser);
+    
     try {
+      console.log("Envoi de la requête PUT à", `/api/admin/users/${updatedUser.id}`);
       const response = await fetch(`/api/admin/users/${updatedUser.id}`, {
         method: "PUT",
         headers: {
@@ -144,9 +148,11 @@ export default function UsersTable({ refreshTrigger = 0 }: UsersTableProps) {
       });
       
       if (!response.ok) {
+        console.error("Erreur de réponse:", response.status, response.statusText);
         throw new Error(`Erreur: ${response.status}`);
       }
       
+      console.log("Mise à jour réussie, mise à jour de la liste d'utilisateurs");
       // Mettre à jour l'utilisateur dans la liste
       setUsers(users.map(user => 
         user.id === updatedUser.id ? updatedUser : user
@@ -154,6 +160,7 @@ export default function UsersTable({ refreshTrigger = 0 }: UsersTableProps) {
       
       setIsEditDialogOpen(false);
       setSelectedUser(null);
+      console.log("Dialogue fermé et utilisateur sélectionné réinitialisé");
     } catch (err) {
       console.error("Erreur lors de la mise à jour de l'utilisateur:", err);
       setError("Impossible de mettre à jour l'utilisateur. Veuillez réessayer plus tard.");
@@ -269,8 +276,13 @@ export default function UsersTable({ refreshTrigger = 0 }: UsersTableProps) {
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem
                           onClick={() => {
-                            setSelectedUser(user);
-                            setIsEditDialogOpen(true);
+                            console.log("Clic sur Modifier pour l'utilisateur:", user);
+                            // Créer une copie de l'utilisateur pour éviter les problèmes de référence
+                            setSelectedUser({...user});
+                            // Ouvrir le dialogue d'édition
+                            setTimeout(() => {
+                              setIsEditDialogOpen(true);
+                            }, 10); // Petit délai pour s'assurer que selectedUser est défini
                           }}
                         >
                           <Edit className="h-4 w-4 mr-2" />
@@ -316,10 +328,14 @@ export default function UsersTable({ refreshTrigger = 0 }: UsersTableProps) {
       </AlertDialog>
 
       {/* Dialogue de modification d'utilisateur */}
-      {selectedUser && (
-        <UserFormDialog
-          open={isEditDialogOpen}
-          onOpenChange={setIsEditDialogOpen}
+      {isEditDialogOpen && selectedUser && (
+        <EditUserDialog
+          isOpen={isEditDialogOpen}
+          onClose={() => {
+            setIsEditDialogOpen(false);
+            // Réinitialiser l'utilisateur sélectionné après la fermeture du dialogue
+            setTimeout(() => setSelectedUser(null), 100);
+          }}
           user={selectedUser}
           onSave={handleUpdateUser}
         />

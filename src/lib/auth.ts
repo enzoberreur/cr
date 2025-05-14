@@ -1,5 +1,8 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions as authOptionsBase } from "@/app/api/auth/[...nextauth]/route";
+
+// Réexporter authOptions pour faciliter son importation dans d'autres fichiers
+export const authOptions = authOptionsBase;
 
 /**
  * Récupère la session utilisateur côté serveur

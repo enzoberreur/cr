@@ -1,0 +1,139 @@
+import { NextRequest, NextResponse } from "next/server";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+
+// Configurer l'API Gemini
+const apiKey = process.env.GEMINI_API_KEY;
+const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
+
+// POST /api/volunteer/gemini-ai
+export async function POST(req: NextRequest) {
+  try {
+    // Vérification de l'authentification
+    const session = await getServerSession(authOptions);
+    
+    if (!session || !session.user || (session.user.userType !== "VOLUNTEER" && session.user.userType !== "ADMIN")) {
+      return NextResponse.json(
+        { error: "Accès non autorisé" },
+        { status: 401 }
+      );
+    }
+
+    // Vérifier si l'API key est configurée
+    if (!genAI || !apiKey) {
+      return NextResponse.json(
+        { error: "La clé API Gemini n'est pas configurée sur le serveur" },
+        { status: 500 }
+      );
+    }
+
+    // Récupérer la question depuis la requête
+    const data = await req.json();
+    const { question } = data;
+
+    if (!question || typeof question !== "string") {
+      return NextResponse.json(
+        { error: "La question est requise et doit être une chaîne de caractères" },
+        { status: 400 }
+      );
+    }
+    
+    // Récupérer les documents RAG depuis la base de données
+    const documents = await prisma.knowledge_documents.findMany({
+      select: {
+        title: true,
+        content: true,
+        tags: true,
+      },
+      // Limiter le nombre de documents pour éviter une surcharge
+      take: 10,
+    });
+
+    if (!documents || documents.length === 0) {
+      return NextResponse.json({
+        response: "Je n'ai pas assez d'informations pour répondre à cette question. La base de connaissances est vide.",
+      });
+    }
+
+    // Recherche des documents pertinents en fonction de la question
+    const keywords = question.toLowerCase().split(/\s+/).filter((word: string) => word.length > 3);
+    
+    // Trier les documents par pertinence
+    const scoredDocuments = documents.map(doc => {
+      const content = (doc.title + " " + doc.content + " " + doc.tags.join(" ")).toLowerCase();
+      const score = keywords.reduce((acc: number, keyword: string) => {
+        return acc + (content.includes(keyword) ? 1 : 0);
+      }, 0);
+      return { ...doc, score };
+    }).sort((a, b) => b.score - a.score);
+    
+    // Prendre les documents les plus pertinents (max 2 pour limiter la taille du contexte)
+    const relevantDocs = scoredDocuments.slice(0, 2);
+    
+    // Construire un texte simple avec le contexte des documents
+    let docsContext = "";
+    relevantDocs.forEach((doc, index) => {
+      // Limiter la taille pour éviter de dépasser les limites
+      const truncatedContent = doc.content.length > 300 ? 
+        doc.content.substring(0, 300) + "..." : 
+        doc.content;
+      
+      docsContext += `Document ${index + 1}: ${doc.title}\n`;
+      docsContext += `${truncatedContent}\n\n`;
+    });
+    
+    try {
+      // Créer le modèle et générer la réponse
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      
+      // Approche très simple: un seul contenu textuel clair
+      const prompt = `
+Informations de référence:
+${docsContext}
+
+En tant qu'assistant de la Croix-Rouge française, réponds à cette question en français, uniquement selon les informations ci-dessus:
+${question}
+
+Si tu ne trouves pas l'information dans les documents fournis, dis simplement que tu n'as pas cette information.`;
+
+      const result = await model.generateContent(prompt);
+      const response = result.response.text();
+
+      return NextResponse.json({
+        response,
+        timestamp: new Date().toISOString(),
+      });
+      
+    } catch (error) {
+      console.error("Erreur lors de l'interaction avec Gemini:", error);
+      
+      // En cas d'erreur, essayons une approche encore plus simple
+      try {
+        const simpleModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const simplePrompt = `Question: "${question}"\n\nRéponds brièvement en français, basé sur ce contexte: "${relevantDocs[0]?.title || 'Aucune information disponible'}"`;
+        
+        const simpleResult = await simpleModel.generateContent(simplePrompt);
+        const simpleResponse = simpleResult.response.text();
+        
+        return NextResponse.json({
+          response: simpleResponse,
+          timestamp: new Date().toISOString(),
+          note: "Réponse simplifiée en raison de contraintes techniques",
+        });
+      } catch (finalError) {
+        return NextResponse.json(
+          { error: "Service temporairement indisponible. Veuillez réessayer." },
+          { status: 503 }
+        );
+      }
+    }
+  } catch (error) {
+    console.error("Erreur générale:", error);
+    return NextResponse.json(
+      { error: "Une erreur inattendue s'est produite" },
+      { status: 500 }
+    );
+  }
+}

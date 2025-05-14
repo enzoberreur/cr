@@ -19,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FormLabel } from "@/components/ui/form";
 
 // Types pour les props du composant
 interface User {
@@ -95,12 +94,21 @@ export default function UserFormDialogFixed(props: UserFormDialogFixedProps) {
 
   // Fonction de fermeture de la boîte de dialogue
   const handleClose = () => {
-    if (onClose) onClose();
-    if (onOpenChange) onOpenChange(false);
+    console.log("UserFormDialogFixed - handleClose appelé, fermeture du dialogue");
+    if (onClose) {
+      console.log("UserFormDialogFixed - Appel de onClose");
+      onClose();
+    }
+    if (onOpenChange) {
+      console.log("UserFormDialogFixed - Appel de onOpenChange(false)");
+      onOpenChange(false);
+    }
   };
 
   // Réinitialise le formulaire lorsque l'utilisateur change ou lorsque le dialogue s'ouvre
   useEffect(() => {
+    console.log("UserFormDialogFixed - useEffect déclenché avec user:", user, "dialogOpen:", dialogOpen);
+    
     // S'assurer que user est bien défini avant d'accéder à ses propriétés
     const firstName = user && user.firstName ? user.firstName : "";
     const lastName = user && user.lastName ? user.lastName : "";
@@ -108,14 +116,17 @@ export default function UserFormDialogFixed(props: UserFormDialogFixedProps) {
     const userType = user && user.userType ? user.userType : "VOLUNTEER";
     const status = user && user.status ? user.status : "ACTIVE";
     
-    setFormData({
+    const newFormData = {
       firstName,
       lastName,
       email,
       password: user ? "" : generateRandomPassword(),
       userType: userType as "ADMIN" | "VOLUNTEER" | "BENEFICIARY",
       status: status as "ACTIVE" | "PENDING" | "BLOCKED",
-    });
+    };
+    
+    console.log("UserFormDialogFixed - Initialisation du formulaire avec:", newFormData);
+    setFormData(newFormData);
     setPasswordCopied(false);
   }, [user, dialogOpen]); // Ajout de dialogOpen pour s'assurer que le formulaire est réinitialisé lorsque le dialogue est ouvert
 
@@ -128,18 +139,22 @@ export default function UserFormDialogFixed(props: UserFormDialogFixedProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("UserFormDialogFixed - handleSubmit appelé, formulaire soumis");
     setIsLoading(true);
 
     try {
       // Dans une implémentation réelle, vous appelleriez une API ici
-      console.log("Envoi des données:", formData);
+      console.log("UserFormDialogFixed - Envoi des données:", formData);
       
       // Simule une requête API
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Si onSave est fourni, appeler cette fonction
       if (onSave) {
+        console.log("UserFormDialogFixed - onSave existe, préparation des données");
+        
         if (user) {
+          console.log("UserFormDialogFixed - Modification d'un utilisateur existant", user.id);
           // Pour une modification, créer un nouvel objet avec les propriétés préservées
           const updatedUser: User = {
             id: user.id,
@@ -154,9 +169,11 @@ export default function UserFormDialogFixed(props: UserFormDialogFixedProps) {
           
           // Ajouter le mot de passe uniquement s'il est fourni
           if (formData.password && formData.password.trim() !== '') {
+            console.log("UserFormDialogFixed - Mot de passe fourni, ajout au payload");
             (updatedUser as any).password = formData.password;
           }
           
+          console.log("UserFormDialogFixed - Appel de onSave avec", updatedUser);
           onSave(updatedUser);
         } else {
           // Pour un nouvel utilisateur
@@ -192,13 +209,25 @@ export default function UserFormDialogFixed(props: UserFormDialogFixedProps) {
     setTimeout(() => setPasswordCopied(false), 2000);
   };
 
-  // Conditionnellement rendre le Dialog uniquement s'il doit être affiché
-  if (!dialogOpen) {
-    return null; // Ne rien rendre si le dialogue n'est pas ouvert
-  }
+  // Le dialogue sera contrôlé par la prop open
+  console.log("UserFormDialogFixed - État final du dialogue:", { dialogOpen, open, isOpen, user });
   
+  // S'assurer que le composant Dialog reçoit les bonnes props
   return (
-    <Dialog open={true} onOpenChange={handleClose}>
+    <Dialog 
+      open={dialogOpen}
+      onOpenChange={(newOpenState) => {
+        console.log("UserFormDialogFixed - onOpenChange appelé avec:", newOpenState);
+        // Appeler handleClose seulement si on ferme le dialogue
+        if (!newOpenState) {
+          handleClose();
+        }
+        // Propager le changement d'état au parent
+        if (onOpenChange) {
+          onOpenChange(newOpenState);
+        }
+      }}
+    >
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>{user ? "Modifier l'utilisateur" : "Ajouter un utilisateur"}</DialogTitle>
@@ -212,7 +241,7 @@ export default function UserFormDialogFixed(props: UserFormDialogFixedProps) {
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <FormLabel htmlFor="firstName">Prénom</FormLabel>
+              <label htmlFor="firstName" className="text-sm font-medium">Prénom</label>
               <Input
                 id="firstName"
                 value={formData.firstName}
@@ -223,7 +252,7 @@ export default function UserFormDialogFixed(props: UserFormDialogFixedProps) {
             </div>
 
             <div className="space-y-2">
-              <FormLabel htmlFor="lastName">Nom</FormLabel>
+              <label htmlFor="lastName" className="text-sm font-medium">Nom</label>
               <Input
                 id="lastName"
                 value={formData.lastName}
@@ -235,7 +264,7 @@ export default function UserFormDialogFixed(props: UserFormDialogFixedProps) {
           </div>
 
           <div className="space-y-2">
-            <FormLabel htmlFor="email">Email</FormLabel>
+            <label htmlFor="email" className="text-sm font-medium">Email</label>
             <Input
               id="email"
               type="email"
@@ -247,9 +276,9 @@ export default function UserFormDialogFixed(props: UserFormDialogFixedProps) {
           </div>
 
           <div className="space-y-2">
-            <FormLabel htmlFor="password">
+            <label htmlFor="password" className="text-sm font-medium">
               {user ? "Nouveau mot de passe (facultatif)" : "Mot de passe"}
-            </FormLabel>
+            </label>
             <div className="flex gap-2">
               <Input
                 id="password"
@@ -283,7 +312,7 @@ export default function UserFormDialogFixed(props: UserFormDialogFixedProps) {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <FormLabel htmlFor="userType">Type d'utilisateur</FormLabel>
+              <label htmlFor="userType" className="text-sm font-medium">Type d'utilisateur</label>
               <Select
                 value={formData.userType}
                 onValueChange={(value) => handleChange("userType", value)}
@@ -300,7 +329,7 @@ export default function UserFormDialogFixed(props: UserFormDialogFixedProps) {
             </div>
 
             <div className="space-y-2">
-              <FormLabel htmlFor="status">Statut</FormLabel>
+              <label htmlFor="status" className="text-sm font-medium">Statut</label>
               <Select
                 value={formData.status}
                 onValueChange={(value) => handleChange("status", value)}
