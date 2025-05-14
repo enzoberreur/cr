@@ -1,0 +1,175 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Account {
+  id                String  @id
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  users             users   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  users        users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model admins {
+  id                  String                @id
+  firstName           String
+  lastName            String
+  phone               String?
+  userId              String                @unique
+  users               users                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  knowledge_documents knowledge_documents[]
+}
+
+model anonymous_diagnostics {
+  id              String   @id
+  diagnosticDate  DateTime @default(now())
+  formResponses   Json?
+  results         Json?
+  recommendations Json?
+  nextSteps       String?
+  pdfUrl          String?
+}
+
+model beneficiaries {
+  id                    String           @id
+  firstName             String
+  lastName              String
+  birthDate             DateTime?
+  phone                 String?
+  address               String?
+  city                  String?
+  postalCode            String?
+  familySituation       String?
+  housing               String?
+  professionalSituation String?
+  monthlyIncome         Float?
+  needs                 Json?
+  photoUrl              String?
+  userId                String           @unique
+  volunteerRefId        String?
+  users                 users            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  volunteers            volunteers?      @relation(fields: [volunteerRefId], references: [id])
+  diagnostics           diagnostics[]
+  face_embeddings       face_embeddings?
+}
+
+model diagnostics {
+  id              String           @id @default(uuid())
+  diagnosticDate  DateTime         @default(now())
+  status          DiagnosticStatus @default(PENDING)
+  formResponses   Json?
+  results         Json?
+  recommendations Json?
+  nextSteps       String?
+  pdfUrl          String?
+  version         String?          @default("v1")
+  beneficiaryId   String
+  volunteerId     String?
+  beneficiaries   beneficiaries    @relation(fields: [beneficiaryId], references: [id])
+  volunteers      volunteers?      @relation(fields: [volunteerId], references: [id])
+}
+
+model face_embeddings {
+  id            String        @id
+  imageUrl      String
+  embedding     Json
+  createdAt     DateTime      @default(now())
+  beneficiaryId String        @unique
+  beneficiaries beneficiaries @relation(fields: [beneficiaryId], references: [id], onDelete: Cascade)
+}
+
+model knowledge_documents {
+  id           String   @id @default(uuid())
+  title        String
+  content      String
+  tags         String[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  uploadedById String
+  admins       admins   @relation(fields: [uploadedById], references: [id])
+}
+
+model users {
+  id            String         @id
+  email         String         @unique
+  password      String?
+  userType      UserType
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime
+  lastLogin     DateTime?
+  status        UserStatus     @default(PENDING)
+  Account       Account[]
+  Session       Session[]
+  admins        admins?
+  beneficiaries beneficiaries?
+  volunteers    volunteers?
+}
+
+model volunteers {
+  id              String          @id
+  firstName       String
+  lastName        String
+  birthDate       DateTime?
+  phone           String?
+  experience      Int             @default(0)
+  skills          Json?
+  specializations Json?
+  availability    Json?
+  trainings       Json?
+  verified        Boolean         @default(false)
+  userId          String          @unique
+  beneficiaries   beneficiaries[]
+  diagnostics     diagnostics[]
+  users           users           @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum DiagnosticStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  BLOCKED
+}
+
+enum UserType {
+  ADMIN
+  VOLUNTEER
+  BENEFICIARY
+}
