@@ -1,3 +1,4 @@
+// filepath: /Users/enzoberreur/Documents/croix/mon-app-red-cross/src/app/api/admin/documents/[id]/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
