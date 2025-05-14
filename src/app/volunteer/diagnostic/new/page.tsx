@@ -11,7 +11,7 @@ import { Loader2, ChevronLeft } from "lucide-react";
 export default function NewDiagnostic() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: session, status } = useSession({
+  const { status } = useSession({
     required: true,
     onUnauthenticated() {
       router.push("/login");

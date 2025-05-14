@@ -8,11 +8,25 @@ import { DiagnosticForm } from "@/components/volunteer/diagnostic-form";
 import { Button } from "@/components/ui/button";
 import { Loader2, ChevronLeft } from "lucide-react";
 
+// Interface pour le diagnostic
+interface Diagnostic {
+  id: string;
+  beneficiaryId: string;
+  diagnosticDate: string;
+  status: "PENDING" | "IN_PROGRESS" | "COMPLETED";
+  formResponses?: Record<string, unknown>;
+  results?: Record<string, number>;
+  recommendations?: Record<string, string>;
+  nextSteps?: string;
+  pdfUrl?: string;
+  version?: string;
+}
+
 export default function EditDiagnostic() {
   const params = useParams();
   const id = params?.id as string;
   const router = useRouter();
-  const { data: session, status } = useSession({
+  const { status } = useSession({
     required: true,
     onUnauthenticated() {
       router.push("/login");
@@ -20,8 +34,8 @@ export default function EditDiagnostic() {
   });
   
   const [isLoading, setIsLoading] = useState(true);
-  const [diagnostic, setDiagnostic] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [diagnostic, setDiagnostic] = useState<Diagnostic | null>(null);
+  const [error, setError,] = useState<string | null>(null);
 
   // Récupérer le diagnostic existant
   useEffect(() => {

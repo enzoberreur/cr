@@ -98,7 +98,7 @@ export function BeneficiariesTable() {
         const data = await response.json();
         
         // Traitement des données pour calculer l'âge, le statut, etc.
-        const processedData = data.map((beneficiary: any) => {
+        const processedData = data.map((beneficiary: Record<string, unknown>) => {
           // Calculer le statut en fonction du dernier diagnostic
           let status: 'ok' | 'follow' | 'incomplete' = 'incomplete';
           let lastDiag = null;
@@ -210,12 +210,12 @@ export function BeneficiariesTable() {
   }, [beneficiaries, searchTerm, statusFilter, sortConfig]);
 
   // Calculer le pourcentage de complétion d'un diagnostic
-  const calculateCompletionPercentage = (diagnostic: any): number => {
+  const calculateCompletionPercentage = (diagnostic: Record<string, unknown>): number => {
     if (!diagnostic.formResponses) return 0;
     
     // Logique simplifiée pour calculer le pourcentage de complétion
     // Dans une implémentation réelle, il faudrait compter les champs remplis
-    const responses = diagnostic.formResponses as Record<string, any>;
+    const responses = diagnostic.formResponses as Record<string, unknown>;
     const totalFields = Object.keys(responses).length;
     const filledFields = Object.values(responses).filter(value => 
       value !== null && value !== undefined && value !== ''

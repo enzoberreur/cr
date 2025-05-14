@@ -74,9 +74,9 @@ interface Diagnostic {
   id: string;
   diagnosticDate: string;
   status: "PENDING" | "IN_PROGRESS" | "COMPLETED";
-  formResponses?: any;
-  results?: any;
-  recommendations?: any;
+  formResponses?: unknown;
+  results?: unknown;
+  recommendations?: unknown;
   nextSteps?: string;
   pdfUrl?: string;
   version?: string;
@@ -86,7 +86,7 @@ export default function BeneficiaryDetail() {
   const params = useParams();
   const id = params?.id as string;
   const router = useRouter();
-  const { data: session } = useSession({
+  useSession({
     required: true,
     onUnauthenticated() {
       router.push("/login");
@@ -270,7 +270,7 @@ export default function BeneficiaryDetail() {
           <div className="bg-red-50 p-4 rounded-lg border border-red-200 text-center">
             <h2 className="text-lg font-medium text-red-800">Bénéficiaire non trouvé</h2>
             <p className="text-red-600 mt-1">
-              Le bénéficiaire que vous recherchez n'existe pas ou vous n'avez pas les droits pour y accéder.
+              Le bénéficiaire que vous recherchez n&apos;existe pas ou vous n&apos;avez pas les droits pour y accéder.
             </p>
             <Button 
               variant="outline" 

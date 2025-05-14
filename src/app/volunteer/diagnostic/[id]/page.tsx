@@ -51,7 +51,7 @@ export default function DiagnosticDetail() {
   const router = useRouter();
   const params = useParams();
   const id = params?.id as string;
-  const { data: session } = useSession({
+  useSession({
     required: true,
     onUnauthenticated() {
       router.push("/login");
@@ -75,7 +75,6 @@ export default function DiagnosticDetail() {
         const data = await response.json();
         setDiagnostic(data);
       } catch (err) {
-        // eslint-disable-next-line no-console
         console.error("Erreur lors du chargement du diagnostic:", err);
         setError("Impossible de charger le diagnostic demandé");
       } finally {

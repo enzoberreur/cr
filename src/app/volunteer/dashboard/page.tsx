@@ -3,17 +3,15 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Clock, MapPin, Plus, Search, Camera, MessageSquareText } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Loader2, Camera, Plus, Search } from "lucide-react";
 
 // Importation des composants personnalisés
 import { NavbarVolunteer } from "@/components/volunteer/navbar-volunteer";
 import { BeneficiariesTable } from "@/components/volunteer/beneficiaries-table";
 import { GeminiAiHelper } from "@/components/volunteer/gemini-ai-helper";
-import { VolunteerNotes } from "@/components/volunteer/volunteer-notes";
 import { BeneficiaryFormDialog } from "@/components/volunteer/beneficiary-form-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
@@ -84,14 +82,6 @@ export default function VolunteerDashboard() {
             >
               <Camera className="h-4 w-4" />
               <span>Rechercher par photo</span>
-            </Button>
-            <Button 
-              variant="outline"
-              className="gap-1 border-[#E2001A] text-[#E2001A] hover:bg-red-50"
-              onClick={() => setIsChatbotOpen(true)}
-            >
-              <MessageSquareText className="h-4 w-4" />
-              <span>Aide IA Gemini</span>
             </Button>
             <Button 
               className="bg-[#E2001A] hover:bg-[#c0001a] gap-1" 

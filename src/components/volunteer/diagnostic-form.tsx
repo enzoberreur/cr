@@ -61,12 +61,29 @@ interface DiagnosticFormProps {
   isEdit?: boolean;
 }
 
+// Interface pour le bénéficiaire
+interface Beneficiary {
+  id: string;
+  firstName: string;
+  lastName: string;
+  birthDate?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  city?: string;
+  postalCode?: string;
+  familySituation?: string;
+  housing?: string;
+  professionalSituation?: string;
+  monthlyIncome?: number;
+}
+
 export function DiagnosticForm({ diagnosticId, beneficiaryId, isEdit = false }: DiagnosticFormProps) {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("identite");
-  const [beneficiary, setBeneficiary] = useState<any>(null);
+  const [beneficiary, setBeneficiary] = useState<Beneficiary | null>(null);
   
   // Définir les valeurs par défaut du formulaire
   const defaultValues: DiagnosticFormValues = {
