@@ -14,7 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2, Heart, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -23,7 +23,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  // Le router est utilisé implicitement via signIn avec redirect
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,7 +128,7 @@ export default function LoginPage() {
           className="inline-flex items-center gap-2 text-gray-600 hover:text-[#E2001A] transition-colors duration-200 mb-8"
         >
           <ArrowLeft className="h-4 w-4" />
-          <span>Retour à l'accueil</span>
+          <span>Retour à l&apos;accueil</span>
         </Link>
 
         <Card className="border border-gray-200 shadow-sm">
