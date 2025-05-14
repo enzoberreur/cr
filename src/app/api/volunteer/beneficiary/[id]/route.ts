@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 // Récupère les détails d'un bénéficiaire spécifique
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: any
 ) {
   try {
     // Vérification de l'authentification
@@ -20,7 +20,7 @@ export async function GET(
       );
     }
     
-    const beneficiaryId = params.id;
+    const beneficiaryId = context.params.id;
 
     // Vérifier que le bénéficiaire existe et qu'il est bien lié au bénévole connecté
     const beneficiary = await prisma.beneficiaries.findFirst({

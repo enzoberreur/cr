@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 // Récupère les détails d'un diagnostic spécifique
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: any
 ) {
   try {
     // Vérification de l'authentification
@@ -20,7 +20,7 @@ export async function GET(
       );
     }
     
-    const diagnosticId = params.id;
+    const diagnosticId = context.params.id;
 
     // Récupérer le diagnostic avec les informations du bénéficiaire associé
     const diagnostic = await prisma.diagnostics.findFirst({
@@ -62,7 +62,7 @@ export async function GET(
 // Met à jour un diagnostic existant
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: any
 ) {
   try {
     // Vérification de l'authentification
@@ -75,7 +75,7 @@ export async function PUT(
       );
     }
     
-    const diagnosticId = params.id;
+    const diagnosticId = context.params.id;
     
     // Vérifier que le diagnostic existe et qu'il est bien lié au bénévole connecté
     const diagnostic = await prisma.diagnostics.findFirst({

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -82,7 +82,9 @@ interface Diagnostic {
   version?: string;
 }
 
-export default function BeneficiaryDetail({ params }: { params: { id: string } }) {
+export default function BeneficiaryDetail() {
+  const params = useParams();
+  const id = params?.id as string;
   const router = useRouter();
   const { data: session } = useSession({
     required: true,
@@ -100,11 +102,11 @@ export default function BeneficiaryDetail({ params }: { params: { id: string } }
   // Récupération des données du bénéficiaire
   useEffect(() => {
     const fetchBeneficiary = async () => {
-      if (!params.id) return;
+      if (!id) return;
 
       try {
         setIsLoading(true);
-        const response = await fetch(`/api/volunteer/beneficiary/${params.id}`);
+        const response = await fetch(`/api/volunteer/beneficiary/${id}`);
         
         if (!response.ok) {
           throw new Error(`Erreur: ${response.status}`);
@@ -115,7 +117,7 @@ export default function BeneficiaryDetail({ params }: { params: { id: string } }
 
         // Fetch private note if any
         try {
-          const noteResponse = await fetch(`/api/volunteer/beneficiary/${params.id}/note`);
+          const noteResponse = await fetch(`/api/volunteer/beneficiary/${id}/note`);
           if (noteResponse.ok) {
             const noteData = await noteResponse.json();
             setPrivateNote(noteData.content || "");
@@ -131,7 +133,7 @@ export default function BeneficiaryDetail({ params }: { params: { id: string } }
     };
 
     fetchBeneficiary();
-  }, [params.id]);
+  }, [id]);
 
   // Calcul de l'âge
   const calculateAge = (birthDateString?: string): number | null => {
@@ -157,7 +159,7 @@ export default function BeneficiaryDetail({ params }: { params: { id: string } }
 
   // Créer un nouveau diagnostic
   const createDiagnostic = () => {
-    router.push(`/volunteer/diagnostic/new?beneficiaryId=${params.id}`);
+    router.push(`/volunteer/diagnostic/new?beneficiaryId=${id}`);
   };
 
   // Voir un diagnostic existant
@@ -172,11 +174,11 @@ export default function BeneficiaryDetail({ params }: { params: { id: string } }
 
   // Enregistrer une note privée
   const savePrivateNote = async () => {
-    if (!params.id) return;
+    if (!id) return;
 
     setIsSavingNote(true);
     try {
-      const response = await fetch(`/api/volunteer/beneficiary/${params.id}/note`, {
+      const response = await fetch(`/api/volunteer/beneficiary/${id}/note`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

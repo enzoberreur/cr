@@ -7,9 +7,11 @@ import { prisma } from "@/lib/prisma";
 // Récupère le PDF d'un diagnostic spécifique
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: any
 ) {
   try {
+    const id = context.params.id;
+
     // Vérification de l'authentification
     const session = await getServerSession(authOptions);
     
@@ -20,7 +22,7 @@ export async function GET(
       );
     }
     
-    const diagnosticId = params.id;
+    const diagnosticId = id;
     
     // Vérifier que l'utilisateur a accès à ce diagnostic
     // Si c'est un bénévole, vérifier qu'il est associé au diagnostic

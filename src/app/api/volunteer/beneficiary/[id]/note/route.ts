@@ -7,9 +7,11 @@ import { prisma } from "@/lib/prisma";
 // Récupère la note privée d'un bénéficiaire pour le bénévole connecté
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: any
 ) {
   try {
+    const id = context.params.id;
+
     // Vérification de l'authentification
     const session = await getServerSession(authOptions);
     
@@ -20,7 +22,7 @@ export async function GET(
       );
     }
 
-    const beneficiaryId = params.id;
+    const beneficiaryId = id;
     const volunteerId = session.user.id;
 
     // Vérifier d'abord que le bénéficiaire est bien assigné à ce bénévole
@@ -75,9 +77,11 @@ export async function GET(
 // Crée ou met à jour une note privée pour un bénéficiaire
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: any
 ) {
   try {
+    const id = context.params.id;
+
     // Vérification de l'authentification
     const session = await getServerSession(authOptions);
     
@@ -88,7 +92,7 @@ export async function POST(
       );
     }
 
-    const beneficiaryId = params.id;
+    const beneficiaryId = id;
     const volunteerId = session.user.id;
 
     // Vérifier d'abord que le bénéficiaire est bien assigné à ce bénévole

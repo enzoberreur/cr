@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma"; // Utiliser l'instance singleton de Prisma
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: any
 ) {
   try {
+    const id = context.params.id;
+
     // Vérifier l'authentification
     const session = await getServerSession(authOptions);
     
@@ -18,7 +20,7 @@ export async function DELETE(
       });
     }
 
-    const userId = params.id;
+    const userId = id;
     
     // Vérifier si l'utilisateur existe
     const user = await prisma.users.findUnique({

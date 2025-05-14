@@ -1,22 +1,22 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 // GET: Récupérer un document spécifique
 export async function GET(
   request: Request,
-  context: { params: { id: string } }
+  context: any
 ) {
   try {
     // Vérifier l'authentification
     const session = await getServerSession(authOptions);
     
     if (!session || session.user?.userType !== "ADMIN") {
-      return new NextResponse(JSON.stringify({ error: "Non autorisé" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
+      return NextResponse.json(
+        { error: "Non autorisé" },
+        { status: 401 }
+      );
     }
 
     const id = context.params.id;
@@ -35,10 +35,10 @@ export async function GET(
     });
 
     if (!document) {
-      return new NextResponse(JSON.stringify({ error: "Document non trouvé" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
+      return NextResponse.json(
+        { error: "Document non trouvé" },
+        { status: 404 }
+      );
     }
 
     // Formater le document pour la réponse
@@ -54,39 +54,31 @@ export async function GET(
       uploadedById: document.uploadedById
     };
 
-    return new NextResponse(JSON.stringify(formattedDocument), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json(formattedDocument, { status: 200 });
   } catch (error) {
     console.error("Erreur lors de la récupération du document:", error);
     
-    return new NextResponse(
-      JSON.stringify({
-        error: "Erreur lors de la récupération du document",
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
+    return NextResponse.json(
+      { error: "Erreur lors de la récupération du document" },
+      { status: 500 }
     );
   }
 }
 
 // PUT: Mettre à jour un document existant
 export async function PUT(
-  request: Request,
-  context: { params: { id: string } }
+  request: NextRequest,
+  context: any
 ) {
   try {
     // Vérifier l'authentification
     const session = await getServerSession(authOptions);
     
     if (!session || session.user?.userType !== "ADMIN") {
-      return new NextResponse(JSON.stringify({ error: "Non autorisé" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
+      return NextResponse.json(
+        { error: "Non autorisé" },
+        { status: 401 }
+      );
     }
 
     const id = context.params.id;
@@ -98,10 +90,10 @@ export async function PUT(
     });
 
     if (!existingDocument) {
-      return new NextResponse(JSON.stringify({ error: "Document non trouvé" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
+      return NextResponse.json(
+        { error: "Document non trouvé" },
+        { status: 404 }
+      );
     }
 
     // Traiter l'importance comme un tag
@@ -141,39 +133,31 @@ export async function PUT(
       uploadedById: updatedDocument.uploadedById
     };
 
-    return new NextResponse(JSON.stringify(formattedDocument), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json(formattedDocument, { status: 200 });
   } catch (error) {
     console.error("Erreur lors de la mise à jour du document:", error);
     
-    return new NextResponse(
-      JSON.stringify({
-        error: "Erreur lors de la mise à jour du document",
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
+    return NextResponse.json(
+      { error: "Erreur lors de la mise à jour du document" },
+      { status: 500 }
     );
   }
 }
 
 // DELETE: Supprimer un document
 export async function DELETE(
-  request: Request,
-  context: { params: { id: string } }
+  request: NextRequest,
+  context: any
 ) {
   try {
     // Vérifier l'authentification
     const session = await getServerSession(authOptions);
     
     if (!session || session.user?.userType !== "ADMIN") {
-      return new NextResponse(JSON.stringify({ error: "Non autorisé" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
+      return NextResponse.json(
+        { error: "Non autorisé" },
+        { status: 401 }
+      );
     }
 
     const id = context.params.id;
@@ -184,10 +168,10 @@ export async function DELETE(
     });
 
     if (!existingDocument) {
-      return new NextResponse(JSON.stringify({ error: "Document non trouvé" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
+      return NextResponse.json(
+        { error: "Document non trouvé" },
+        { status: 404 }
+      );
     }
 
     // Supprimer le document
@@ -195,21 +179,13 @@ export async function DELETE(
       where: { id },
     });
 
-    return new NextResponse(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("Erreur lors de la suppression du document:", error);
     
-    return new NextResponse(
-      JSON.stringify({
-        error: "Erreur lors de la suppression du document",
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
+    return NextResponse.json(
+      { error: "Erreur lors de la suppression du document" },
+      { status: 500 }
     );
   }
 }

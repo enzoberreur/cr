@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -47,8 +47,10 @@ interface Diagnostic {
   };
 }
 
-export default function DiagnosticDetail({ params }: { params: { id: string } }) {
+export default function DiagnosticDetail() {
   const router = useRouter();
+  const params = useParams();
+  const id = params?.id as string;
   const { data: session, status } = useSession({
     required: true,
     onUnauthenticated() {
@@ -63,11 +65,11 @@ export default function DiagnosticDetail({ params }: { params: { id: string } })
   // Récupération des données du diagnostic
   useEffect(() => {
     const fetchDiagnostic = async () => {
-      if (!params.id) return;
+      if (!id) return;
 
       try {
         setIsLoading(true);
-        const response = await fetch(`/api/volunteer/diagnostic/${params.id}`);
+        const response = await fetch(`/api/volunteer/diagnostic/${id}`);
         
         if (!response.ok) {
           throw new Error(`Erreur: ${response.status}`);
@@ -84,7 +86,7 @@ export default function DiagnosticDetail({ params }: { params: { id: string } })
     };
 
     fetchDiagnostic();
-  }, [params.id]);
+  }, [id]);
 
   // Formatage de la date
   const formatDate = (dateString: string): string => {

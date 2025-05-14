@@ -1,14 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { NavbarVolunteer } from "@/components/volunteer/navbar-volunteer";
 import { DiagnosticForm } from "@/components/volunteer/diagnostic-form";
 import { Button } from "@/components/ui/button";
 import { Loader2, ChevronLeft } from "lucide-react";
 
-export default function EditDiagnostic({ params }: { params: { id: string } }) {
+export default function EditDiagnostic() {
+  const params = useParams();
+  const id = params?.id as string;
   const router = useRouter();
   const { data: session, status } = useSession({
     required: true,
@@ -24,7 +26,7 @@ export default function EditDiagnostic({ params }: { params: { id: string } }) {
   // Récupérer le diagnostic existant
   useEffect(() => {
     const fetchDiagnostic = async () => {
-      if (!params.id) {
+      if (!id) {
         setError("ID du diagnostic manquant");
         setIsLoading(false);
         return;
@@ -32,7 +34,7 @@ export default function EditDiagnostic({ params }: { params: { id: string } }) {
 
       try {
         setIsLoading(true);
-        const response = await fetch(`/api/volunteer/diagnostic/${params.id}`);
+        const response = await fetch(`/api/volunteer/diagnostic/${id}`);
         
         if (!response.ok) {
           throw new Error(`Erreur: ${response.status}`);
@@ -51,7 +53,7 @@ export default function EditDiagnostic({ params }: { params: { id: string } }) {
     if (status !== "loading") {
       fetchDiagnostic();
     }
-  }, [params.id, status]);
+  }, [id, status]);
 
   if (status === "loading" || isLoading) {
     return (
@@ -110,7 +112,7 @@ export default function EditDiagnostic({ params }: { params: { id: string } }) {
         </div>
         
         <DiagnosticForm 
-          diagnosticId={params.id} 
+          diagnosticId={id} 
           beneficiaryId={diagnostic.beneficiaryId}
           isEdit={true}
         />
