@@ -37,14 +37,15 @@ import UserFormDialog from "./user-form-dialog";
 
 // Interface pour les utilisateurs
 interface User {
-  id: string;
+  id?: string;
   email: string;
   firstName?: string;
   lastName?: string;
   userType: "ADMIN" | "VOLUNTEER" | "BENEFICIARY";
   status: "ACTIVE" | "PENDING" | "BLOCKED";
-  createdAt: string;
+  createdAt?: string;
   lastLogin?: string | null;
+  password?: string;
 }
 
 // Un utilisateur vide pour le formulaire de création
