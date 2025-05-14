@@ -33,7 +33,7 @@ export default function LogoutPage() {
       <div className="text-center">
         <Loader2 className="h-12 w-12 text-[#E2001A] mx-auto animate-spin" />
         <h1 className="mt-6 text-2xl font-semibold text-gray-900">Déconnexion en cours...</h1>
-        <p className="mt-2 text-gray-500">Vous serez redirigé vers la page d'accueil.</p>
+        <p className="mt-2 text-gray-500">Vous serez redirigé vers la page d&apos;accueil.</p>
       </div>
     </div>
   );

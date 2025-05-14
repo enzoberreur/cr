@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2, Heart, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { Loader2, ArrowLeft, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -57,8 +57,9 @@ export default function SignUpPage() {
         router.push("/login");
       }, 2000);
 
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      setError(errorMessage);
       setIsLoading(false);
     }
   };
@@ -80,7 +81,7 @@ export default function SignUpPage() {
           className="inline-flex items-center gap-2 text-gray-600 hover:text-[#E2001A] transition-colors duration-200 mb-8"
         >
           <ArrowLeft className="h-4 w-4" />
-          <span>Retour à l'accueil</span>
+          <span>Retour à l&apos;accueil</span>
         </Link>
 
         <Card className="border border-gray-200 shadow-sm">
