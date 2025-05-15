@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -6,7 +6,7 @@ import { authOptions } from "@/lib/auth";
 // GET: Récupérer un document spécifique
 export async function GET(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Vérifier l'authentification
@@ -19,7 +19,7 @@ export async function GET(
       );
     }
 
-    const id = context.params.id;
+    const id = (await params).id;
 
     // Récupérer le document
     const document = await prisma.knowledge_documents.findUnique({
@@ -67,8 +67,8 @@ export async function GET(
 
 // PUT: Mettre à jour un document existant
 export async function PUT(
-  request: NextRequest,
-  context: { params: { id: string } }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Vérifier l'authentification
@@ -81,7 +81,7 @@ export async function PUT(
       );
     }
 
-    const id = context.params.id;
+    const id = (await params).id;
     const data = await request.json();
 
     // Vérifier si le document existe
@@ -146,8 +146,8 @@ export async function PUT(
 
 // DELETE: Supprimer un document
 export async function DELETE(
-  request: NextRequest,
-  context: { params: { id: string } }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Vérifier l'authentification
@@ -160,7 +160,7 @@ export async function DELETE(
       );
     }
 
-    const id = context.params.id;
+    const id = (await params).id;
 
     // Vérifier si le document existe
     const existingDocument = await prisma.knowledge_documents.findUnique({

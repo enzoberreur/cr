@@ -62,7 +62,7 @@ export function LogementSection({ form }: LogementSectionProps) {
                   Hébergé(e) par la famille/amis
                 </SelectItem>
                 <SelectItem value="hebergement_urgence">
-                  Hébergement d'urgence
+                  Hébergement d&apos;urgence
                 </SelectItem>
                 <SelectItem value="sans_domicile">Sans domicile</SelectItem>
               </SelectContent>
@@ -152,7 +152,7 @@ export function LogementSection({ form }: LogementSectionProps) {
         <div className="p-4 bg-red-50 rounded-lg">
           <p className="text-sm text-red-800">
             Si vous êtes sans domicile, nous vous recommandons de contacter immédiatement le 115 
-            (numéro gratuit) pour obtenir une aide d'urgence.
+            (numéro gratuit) pour obtenir une aide d&apos;urgence.
           </p>
         </div>
       )}
@@ -160,7 +160,7 @@ export function LogementSection({ form }: LogementSectionProps) {
       {situation === "hebergement_urgence" && (
         <div className="p-4 bg-yellow-50 rounded-lg">
           <p className="text-sm text-yellow-800">
-            Si vous êtes en hébergement d'urgence, un travailleur social peut vous 
+            Si vous êtes en hébergement d&apos;urgence, un travailleur social peut vous 
             accompagner dans vos démarches pour trouver une solution plus stable.
           </p>
         </div>

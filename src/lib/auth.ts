@@ -45,7 +45,7 @@ export const authOptions: NextAuthOptions = {
             email: user.email,
             userType: user.userType,
           };
-        } catch (error) {
+        } catch {
           return null;
         }
       },

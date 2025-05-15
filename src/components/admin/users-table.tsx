@@ -33,7 +33,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import UserFormDialogFixed from "./user-form-dialog-fixed";
 import EditUserDialog from "./edit-user-dialog";
 
 // Interface pour les utilisateurs
@@ -48,17 +47,6 @@ interface User {
   lastLogin?: string | null;
   password?: string;
 }
-
-// Un utilisateur vide pour le formulaire de création
-const emptyUser: User = {
-  id: "",
-  email: "",
-  firstName: "",
-  lastName: "",
-  userType: "BENEFICIARY",
-  status: "PENDING",
-  createdAt: new Date().toISOString(),
-};
 
 interface UsersTableProps {
   refreshTrigger?: number;
@@ -315,7 +303,7 @@ export default function UsersTable({ refreshTrigger = 0 }: UsersTableProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Êtes-vous certain de vouloir supprimer cet utilisateur ?</AlertDialogTitle>
             <AlertDialogDescription>
-              Cette action est irréversible. L'utilisateur {selectedUser?.firstName} {selectedUser?.lastName} ({selectedUser?.email}) sera définitivement supprimé.
+              Cette action est irréversible. L&apos;utilisateur {selectedUser?.firstName} {selectedUser?.lastName} ({selectedUser?.email}) sera définitivement supprimé.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -327,7 +315,7 @@ export default function UsersTable({ refreshTrigger = 0 }: UsersTableProps) {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Dialogue de modification d'utilisateur */}
+      {/* Dialogue de modification d&apos;utilisateur */}
       {isEditDialogOpen && selectedUser && (
         <EditUserDialog
           isOpen={isEditDialogOpen}

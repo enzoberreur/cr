@@ -253,7 +253,7 @@ export function FinancesSection({ form }: FinancesSectionProps) {
       {revenuMensuel === 0 && (
         <div className="p-4 bg-yellow-50 rounded-lg">
           <p className="text-sm text-yellow-800">
-            Si vous n'avez aucun revenu, nous vous recommandons de contacter rapidement 
+            Si vous n&apos;avez aucun revenu, nous vous recommandons de contacter rapidement 
             une assistante sociale pour évaluer vos droits aux aides sociales.
           </p>
         </div>

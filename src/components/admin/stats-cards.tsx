@@ -32,7 +32,6 @@ const defaultStats: Stats = {
 export default function StatsCards() {
   const [stats, setStats] = useState<Stats>(defaultStats);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   // Charger les vraies données depuis l'API
   useEffect(() => {
@@ -47,10 +46,8 @@ export default function StatsCards() {
         
         const data = await response.json();
         setStats(data);
-        setError(null);
       } catch (err) {
         console.error("Erreur lors de la récupération des stats:", err);
-        setError("Impossible de charger les statistiques");
         // Utiliser des données fictives en cas d'erreur pour le développement
         setStats({
           totalUsers: 487,

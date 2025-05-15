@@ -47,7 +47,7 @@ async function main() {
     });
 
     // Créer l'administrateur associé
-    const admin = await prisma.admins.create({
+    await prisma.admins.create({
       data: {
         id: adminId,
         firstName: DEFAULT_ADMIN.firstName,

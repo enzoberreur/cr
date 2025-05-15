@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,36 +27,25 @@ export function DiagnosticForm() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Sections du formulaire avec style Notion
-  const sections = [
-    { name: "Identité", icon: "👤" },
-    { name: "Situation familiale", icon: "👪" },
-    { name: "Logement", icon: "🏠" },
-    { name: "Finances", icon: "💰" },
-    { name: "Santé", icon: "🩺" },
-    { name: "Droits sociaux", icon: "📑" },
-    { name: "Besoins", icon: "🔍" },
-  ];
-
   const form = useForm<DiagnosticFormData>({
     resolver: zodResolver(diagnosticFormSchema),
     defaultValues: {
       identite: {
         age: null as unknown as number, // Initialiser comme null mais typé comme number
-        genre: "" as any, // Utiliser any pour éviter les problèmes d'enum
+        genre: "" as z.infer<typeof diagnosticFormSchema>["identite"]["genre"],
         nationalite: "",
         ville: "",
         codePostal: "",
       },
       situationFamiliale: {
-        statut: "" as any, // Utiliser any pour éviter les problèmes d'enum
+        statut: "" as z.infer<typeof diagnosticFormSchema>["situationFamiliale"]["statut"],
         enfants: 0,
         personnesACharge: 0,
         soutienFamilial: false,
       },
       logement: {
-        situation: "" as any, // Utiliser any pour éviter les problèmes d'enum
-        typeLogement: "" as any, // Utiliser any pour éviter les problèmes d'enum
+        situation: "" as z.infer<typeof diagnosticFormSchema>["logement"]["situation"],
+        typeLogement: "" as z.infer<typeof diagnosticFormSchema>["logement"]["typeLogement"],
         montantLoyer: 0,
         difficultesPaiement: false,
       },
@@ -73,7 +63,7 @@ export function DiagnosticForm() {
         montantDettes: 0,
       },
       sante: {
-        couvertureMedicale: "" as any, // Utiliser any pour éviter les problèmes d'enum
+        couvertureMedicale: "" as z.infer<typeof diagnosticFormSchema>["sante"]["couvertureMedicale"],
         mutuelle: false,
         problemesSante: false,
         suiviMedical: false,
@@ -209,7 +199,7 @@ export function DiagnosticForm() {
       <div className="mt-4 p-4 bg-gray-50 rounded-lg text-sm text-gray-600">
         <p className="flex items-center">
           <span className="mr-2">⚠️</span>
-          Ce diagnostic n'est pas enregistré. Il sera supprimé si vous fermez cette page.
+          Ce diagnostic n&apos;est pas enregistré. Il sera supprimé si vous fermez cette page.
         </p>
       </div>
     </Form>

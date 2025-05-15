@@ -25,7 +25,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-12 w-12 text-[#E2001A] mx-auto animate-spin" />
-          <h2 className="mt-4 text-xl font-semibold">Chargement de l'interface administrateur...</h2>
+          <h2 className="mt-4 text-xl font-semibold">Chargement de l&apos;interface administrateur...</h2>
         </div>
       </div>
     );

@@ -187,7 +187,7 @@ export default function SimplifiedVolunteerDialog({ open, onOpenChange }: AddVol
             <FormLabel htmlFor="status">Statut</FormLabel>
             <Select 
               value={status} 
-              onValueChange={(value: any) => setStatus(value)}
+              onValueChange={(value: "ACTIVE" | "PENDING" | "BLOCKED") => setStatus(value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionner un statut" />

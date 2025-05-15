@@ -1,8 +1,5 @@
 import * as z from "zod";
 
-// Helper pour faciliter la gestion des champs optionnels pendant la saisie
-const createOptionalField = (schema: z.ZodTypeAny) => z.union([z.literal(''), schema]);
-
 export const diagnosticFormSchema = z.object({
   // 1. Identité & contexte général
   identite: z.object({

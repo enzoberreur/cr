@@ -1,7 +1,7 @@
 // Script pour créer un administrateur par défaut
-const { PrismaClient } = require('../../src/generated/prisma');
-const bcrypt = require('bcrypt');
-const crypto = require('crypto');
+import { PrismaClient } from '../../src/generated/prisma';
+import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 
 const prisma = new PrismaClient();
 
@@ -29,13 +29,12 @@ async function main() {
 
     // Générer des IDs uniques
     const userId = crypto.randomUUID();
-    const adminId = crypto.randomUUID();
 
     // Hacher le mot de passe
     const hashedPassword = await bcrypt.hash(DEFAULT_ADMIN.password, 10);
 
     // Créer l'utilisateur
-    const user = await prisma.users.create({
+    await prisma.users.create({
       data: {
         id: userId,
         email: DEFAULT_ADMIN.email,
@@ -44,16 +43,6 @@ async function main() {
         status: 'ACTIVE',
         createdAt: new Date(),
         updatedAt: new Date(),
-      },
-    });
-
-    // Créer l'administrateur associé
-    const admin = await prisma.admins.create({
-      data: {
-        id: adminId,
-        firstName: DEFAULT_ADMIN.firstName,
-        lastName: DEFAULT_ADMIN.lastName,
-        userId: user.id,
       },
     });
 

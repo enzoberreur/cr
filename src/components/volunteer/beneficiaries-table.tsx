@@ -22,10 +22,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { Card, CardContent } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { 
-  Search, MoreHorizontal, Eye, FileText, Calendar, Plus, Camera, Filter, 
+  Search, Eye, FileText, Calendar, Filter, 
   SortAsc, SortDesc, Notebook, Loader2, AlertCircle 
 } from "lucide-react";
 import Image from "next/image";
@@ -43,6 +41,12 @@ type Beneficiary = {
     status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
     completionPercentage?: number;
   };
+  diagnostics?: Array<{
+    id: string;
+    diagnosticDate: string;
+    status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
+    completionPercentage?: number;
+  }>;
   status?: 'ok' | 'follow' | 'incomplete';
 };
 
@@ -78,7 +82,6 @@ export function BeneficiariesTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
-  const [isFaceSearchOpen, setIsFaceSearchOpen] = useState(false);
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -99,39 +102,34 @@ export function BeneficiariesTable() {
         
         // Traitement des données pour calculer l'âge, le statut, etc.
         const processedData = data.map((beneficiary: Record<string, unknown>) => {
+          // Correction : forcer diagnostics à être un tableau typé
+          const diagnostics = Array.isArray(beneficiary.diagnostics)
+            ? beneficiary.diagnostics as Array<{
+                id: string;
+                diagnosticDate: string;
+                status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
+                completionPercentage?: number;
+              }>
+            : [];
           // Calculer le statut en fonction du dernier diagnostic
-          let status: 'ok' | 'follow' | 'incomplete' = 'incomplete';
+          const status: 'ok' | 'follow' | 'incomplete' = 'incomplete';
           let lastDiag = null;
-          
-          if (beneficiary.diagnostics && beneficiary.diagnostics.length > 0) {
-            // Trier les diagnostics par date (le plus récent d'abord)
-            const sortedDiagnostics = [...beneficiary.diagnostics].sort(
+          if (diagnostics.length > 0) {
+            const sortedDiagnostics = [...diagnostics].sort(
               (a, b) => new Date(b.diagnosticDate).getTime() - new Date(a.diagnosticDate).getTime()
             );
-            
             lastDiag = {
               id: sortedDiagnostics[0].id,
               diagnosticDate: sortedDiagnostics[0].diagnosticDate,
               status: sortedDiagnostics[0].status,
               completionPercentage: calculateCompletionPercentage(sortedDiagnostics[0])
             };
-            
-            // Définir le statut en fonction du diagnostic
-            if (sortedDiagnostics[0].status === 'COMPLETED') {
-              status = 'ok';
-            } else if (sortedDiagnostics[0].status === 'IN_PROGRESS') {
-              status = 'follow';
-            }
           }
-          
           return {
-            id: beneficiary.id,
-            firstName: beneficiary.firstName,
-            lastName: beneficiary.lastName,
-            birthDate: beneficiary.birthDate,
-            photoUrl: beneficiary.photoUrl,
+            ...beneficiary,
+            diagnostics,
             lastDiagnostic: lastDiag,
-            status
+            status,
           };
         });
         
@@ -190,7 +188,7 @@ export function BeneficiariesTable() {
             break;
           case 'status':
             aValue = a.status || '';
-            bValue = b.status || '';
+            bValue = a.status || '';
             break;
           default:
             return 0;
@@ -254,11 +252,6 @@ export function BeneficiariesTable() {
   // Fonction pour voir le profil d'un bénéficiaire
   const viewBeneficiary = (id: string) => {
     router.push(`/volunteer/beneficiary/${id}`);
-  };
-  
-  // Fonction pour télécharger le PDF d'un diagnostic
-  const downloadPdf = (diagnosticId: string) => {
-    window.open(`/api/diagnostic/${diagnosticId}/pdf`, '_blank');
   };
   
   // Fonction pour ajouter une note

@@ -61,7 +61,7 @@ export function SituationFamilialeSection({ form }: SituationFamilialeSectionPro
         name="situationFamiliale.enfants"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nombre d'enfants</FormLabel>
+            <FormLabel>Nombre d&apos;enfants</FormLabel>
             <FormControl>
               <Input
                 type="number"
@@ -71,7 +71,7 @@ export function SituationFamilialeSection({ form }: SituationFamilialeSectionPro
               />
             </FormControl>
             <FormDescription>
-              Indiquez le nombre d'enfants à votre charge
+              Indiquez le nombre d&apos;enfants à votre charge
             </FormDescription>
             <FormMessage />
           </FormItem>
@@ -116,7 +116,7 @@ export function SituationFamilialeSection({ form }: SituationFamilialeSectionPro
                 Soutien familial
               </FormLabel>
               <FormDescription>
-                Bénéficiez-vous d'un soutien de votre famille (financier, logement, garde d'enfants...)?
+                Bénéficiez-vous d&apos;un soutien de votre famille (financier, logement, garde d&apos;enfants...)?
               </FormDescription>
             </div>
           </FormItem>

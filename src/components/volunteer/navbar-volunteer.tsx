@@ -2,7 +2,6 @@
 
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import Image from "next/image";
 import LogoutButton from "@/components/logout-button";
 import { UserCircle, Heart, ChevronDown } from "lucide-react";
 import { 

@@ -28,23 +28,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
-import {
-  Plus,
-  Search,
-  Edit,
-  Trash2,
-  Tags,
-  CalendarDays,
-  FileText,
-  Save,
-  Star,
-  X,
-  AlertTriangle,
-  Loader2,
-} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -63,6 +47,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Plus,
+  Search,
+  Edit,
+  Trash2,
+  CalendarDays,
+  FileText,
+  Star,
+  X,
+  AlertTriangle,
+  Loader2,
+} from "lucide-react";
 
 // Interface pour les documents de la base de connaissance
 interface KnowledgeDocument {

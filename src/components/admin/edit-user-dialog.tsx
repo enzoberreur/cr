@@ -98,7 +98,7 @@ const EditUserDialog = ({ isOpen, onClose, user, onSave }: EditUserDialogProps) 
       
       // Ajouter le mot de passe uniquement s'il est fourni
       if (formData.password && formData.password.trim() !== '') {
-        (updatedUser as any).password = formData.password;
+        (updatedUser as User & { password: string }).password = formData.password;
       }
       
       console.log("EditUserDialog - Appel de onSave avec:", updatedUser);
@@ -120,9 +120,9 @@ const EditUserDialog = ({ isOpen, onClose, user, onSave }: EditUserDialogProps) 
     >
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Modifier l'utilisateur</DialogTitle>
+          <DialogTitle>Modifier l&apos;utilisateur</DialogTitle>
           <DialogDescription>
-            Modifiez les informations de l'utilisateur ci-dessous.
+            Modifiez les informations de l&apos;utilisateur ci-dessous.
           </DialogDescription>
         </DialogHeader>
 
@@ -195,7 +195,7 @@ const EditUserDialog = ({ isOpen, onClose, user, onSave }: EditUserDialogProps) 
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <FormLabel htmlFor="userType">Type d'utilisateur</FormLabel>
+              <FormLabel htmlFor="userType">Type d&apos;utilisateur</FormLabel>
               <Select
                 value={formData.userType}
                 onValueChange={(value) => handleChange("userType", value)}

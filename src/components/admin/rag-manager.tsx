@@ -21,18 +21,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
 import {
   Plus,
   Search,
   Edit,
   Trash2,
-  Tags,
   CalendarDays,
   FileText,
-  Save,
   Star,
   X,
   AlertTriangle,

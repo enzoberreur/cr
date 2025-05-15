@@ -94,7 +94,7 @@ export function VolunteerChatbot() {
           {isLoading && (
             <div className="bg-white p-3 rounded-lg shadow-sm flex items-center space-x-2">
               <Loader2 className="h-4 w-4 animate-spin text-[#E2001A]" />
-              <p className="text-sm text-gray-500">L'assistant réfléchit...</p>
+              <p className="text-sm text-gray-500">L&apos;assistant réfléchit...</p>
             </div>
           )}
         </div>

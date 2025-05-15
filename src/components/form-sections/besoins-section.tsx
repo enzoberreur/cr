@@ -43,7 +43,7 @@ export function BesoinsSection({ form }: BesoinsSectionProps) {
             <div className="mb-4">
               <FormLabel>Besoins prioritaires</FormLabel>
               <FormDescription>
-                Sélectionnez les domaines dans lesquels vous avez besoin d'aide en priorité
+                Sélectionnez les domaines dans lesquels vous avez besoin d&apos;aide en priorité
               </FormDescription>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -91,7 +91,7 @@ export function BesoinsSection({ form }: BesoinsSectionProps) {
           <FormItem>
             <FormLabel>Autres besoins ou commentaires</FormLabel>
             <FormDescription>
-              Si vous avez d'autres besoins ou souhaitez ajouter des précisions, écrivez-les ici
+              Si vous avez d&apos;autres besoins ou souhaitez ajouter des précisions, écrivez-les ici
             </FormDescription>
             <FormControl>
               <Textarea
@@ -108,7 +108,7 @@ export function BesoinsSection({ form }: BesoinsSectionProps) {
       <div className="p-4 bg-blue-50 rounded-lg">
         <p className="text-sm text-blue-800">
           Vos réponses nous aideront à mieux comprendre vos besoins et à vous proposer 
-          des solutions adaptées. N'hésitez pas à être précis dans vos commentaires.
+          des solutions adaptées. N&apos;hésitez pas à être précis dans vos commentaires.
         </p>
       </div>
     </div>

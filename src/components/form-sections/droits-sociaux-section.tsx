@@ -94,7 +94,7 @@ export function DroitsSociauxSection({ form }: DroitsSociauxSectionProps) {
             <div className="mb-4">
               <FormLabel>Difficultés rencontrées</FormLabel>
               <FormDescription>
-                Quelles difficultés rencontrez-vous dans l'accès à vos droits ?
+                Quelles difficultés rencontrez-vous dans l&apos;accès à vos droits ?
               </FormDescription>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -147,7 +147,7 @@ export function DroitsSociauxSection({ form }: DroitsSociauxSectionProps) {
               />
             </FormControl>
             <div className="space-y-1 leading-none">
-              <FormLabel>Besoin d'accompagnement</FormLabel>
+              <FormLabel>Besoin d&apos;accompagnement</FormLabel>
               <FormDescription>
                 Souhaitez-vous être accompagné(e) dans vos démarches administratives ?
               </FormDescription>

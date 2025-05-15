@@ -3,7 +3,7 @@
 /**
  * Script pour vérifier les variables d'environnement critiques pour l'application
  */
-const dotenv = require('dotenv');
+import dotenv from 'dotenv';
 dotenv.config();
 
 function verifierVariablesEnv() {
@@ -70,7 +70,7 @@ function verifierVariablesEnv() {
     try {
       const url = new URL(process.env.NEXTAUTH_URL);
       console.log(`✅ NEXTAUTH_URL est une URL valide: ${url.href}`);
-    } catch (e) {
+    } catch {
       console.log(`❌ NEXTAUTH_URL n'est pas une URL valide: ${process.env.NEXTAUTH_URL}`);
     }
   }

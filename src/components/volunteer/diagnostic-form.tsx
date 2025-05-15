@@ -6,20 +6,15 @@ import { useSession } from "next-auth/react";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
 import { 
   Select, 
   SelectContent, 
@@ -80,7 +75,7 @@ interface Beneficiary {
 
 export function DiagnosticForm({ diagnosticId, beneficiaryId, isEdit = false }: DiagnosticFormProps) {
   const router = useRouter();
-  const { data } = useSession();
+  useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("identite");
   const [beneficiary, setBeneficiary] = useState<Beneficiary | null>(null);
@@ -198,7 +193,7 @@ export function DiagnosticForm({ diagnosticId, beneficiaryId, isEdit = false }: 
   };
   
   // Mettre à jour les réponses du formulaire
-  const updateFormResponses = (section: string, responses: any) => {
+  const updateFormResponses = (section: string, responses: Record<string, unknown>) => {
     const currentResponses = form.getValues("formResponses") || {};
     
     form.setValue("formResponses", {

@@ -1,7 +1,7 @@
 "use strict";
 
 // script pour tester la connexion à l'API d'authentification
-const fetch = require("node-fetch");
+import fetch from "node-fetch";
 
 // URL à tester
 const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";

@@ -170,7 +170,7 @@ export default function UserFormDialogFixed(props: UserFormDialogFixedProps) {
           // Ajouter le mot de passe uniquement s'il est fourni
           if (formData.password && formData.password.trim() !== '') {
             console.log("UserFormDialogFixed - Mot de passe fourni, ajout au payload");
-            (updatedUser as any).password = formData.password;
+            (updatedUser as User & { password: string }).password = formData.password;
           }
           
           console.log("UserFormDialogFixed - Appel de onSave avec", updatedUser);
@@ -187,7 +187,7 @@ export default function UserFormDialogFixed(props: UserFormDialogFixedProps) {
           
           // Ajouter le mot de passe seulement s'il existe
           if (formData.password) {
-            (newUser as any).password = formData.password;
+            (newUser as User & { password: string }).password = formData.password;
           }
           
           onSave(newUser);
@@ -312,7 +312,7 @@ export default function UserFormDialogFixed(props: UserFormDialogFixedProps) {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label htmlFor="userType" className="text-sm font-medium">Type d'utilisateur</label>
+              <label htmlFor="userType" className="text-sm font-medium">Type d&apos;utilisateur</label>
               <Select
                 value={formData.userType}
                 onValueChange={(value) => handleChange("userType", value)}

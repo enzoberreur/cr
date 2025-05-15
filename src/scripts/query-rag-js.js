@@ -1,5 +1,5 @@
 // Simple script pour requêter les documents RAG sans dépendances TypeScript
-const { PrismaClient } = require('../generated/prisma');
+import { PrismaClient } from '../generated/prisma';
 
 // Initialisation du client Prisma
 const prisma = new PrismaClient();

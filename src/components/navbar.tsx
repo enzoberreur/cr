@@ -5,7 +5,7 @@ import Link from "next/link";
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
 import { Heart, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import LogoutButton from "./logout-button";
 import { useState, useEffect } from "react";
 
@@ -138,7 +138,7 @@ export default function Navbar() {
                       <div className="flex items-center justify-between">
                         <div>
                           <div className="text-primary font-medium mb-1">Contact</div>
-                          <p className="text-sm text-muted-foreground">Besoin d'aide ?</p>
+                          <p className="text-sm text-muted-foreground">Besoin d&apos;aide ?</p>
                         </div>
                         <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-all opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0" />
                       </div>

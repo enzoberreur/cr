@@ -2,9 +2,8 @@
 
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Heart, UserCircle2, Settings, LogOut } from "lucide-react";
+import { Heart, UserCircle2, Settings } from "lucide-react";
 import LogoutButton from "../logout-button";
 import {
   DropdownMenu,
@@ -17,12 +16,6 @@ import {
 
 export default function NavbarAdmin() {
   const { data: session } = useSession();
-  const pathname = usePathname();
-  
-  // Mettre en évidence l'élément de menu actif
-  const isActive = (path: string) => {
-    return pathname === path || pathname?.startsWith(path + "/");
-  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm">

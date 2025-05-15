@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
   Dialog,
@@ -13,7 +12,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { FormLabel } from "@/components/ui/form";
 import {
   Select,
@@ -22,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { format } from "date-fns";
 import { Loader2, Camera, Upload } from "lucide-react";
 
 // Définir le type pour le formulaire de bénéficiaire
@@ -54,7 +51,6 @@ export function BeneficiaryFormDialog({
   onOpenChange,
   onSuccess,
 }: BeneficiaryFormDialogProps) {
-  const router = useRouter();
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -136,16 +132,11 @@ export function BeneficiaryFormDialog({
         throw new Error(`Erreur ${response.status}: ${await response.text()}`);
       }
 
-      const result = await response.json();
-      
       // Fermer le dialogue et rafraîchir la page
       onOpenChange(false);
       if (onSuccess) {
         onSuccess();
       }
-      
-      // Option: Rediriger vers la page du bénéficiaire nouvellement créé
-      // router.push(`/volunteer/beneficiary/${result.id}`);
       
     } catch (error) {
       console.error("Erreur lors de la création du bénéficiaire:", error);
@@ -162,7 +153,7 @@ export function BeneficiaryFormDialog({
           <DialogTitle>Ajouter un nouveau bénéficiaire</DialogTitle>
           <DialogDescription>
             Remplissez le formulaire ci-dessous pour ajouter un nouveau bénéficiaire.
-            Les champs marqués d'un * sont obligatoires.
+            Les champs marqués d&apos;un * sont obligatoires.
           </DialogDescription>
         </DialogHeader>
 

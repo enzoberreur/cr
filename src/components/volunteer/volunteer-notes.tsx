@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,7 +33,6 @@ export function VolunteerNotes() {
     content: "",
     beneficiaryId: ""
   });
-  const { data: session } = useSession();
 
   // Simulation de chargement des notes
   useEffect(() => {
@@ -207,7 +205,7 @@ export function VolunteerNotes() {
             <p className="text-gray-500">Aucune note ne correspond à votre recherche.</p>
           ) : (
             <p className="text-gray-500">
-              Vous n'avez pas encore de notes. Créez une note pour garder des informations confidentielles sur vos bénéficiaires.
+              Vous n&apos;avez pas encore de notes. Créez une note pour garder des informations confidentielles sur vos bénéficiaires.
             </p>
           )}
         </div>
