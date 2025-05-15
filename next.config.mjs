@@ -13,6 +13,11 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Variables d'environnement disponibles en production
+  env: {
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || 'dKSoXHTATZoeQwXoosjw5sLKupF1B1r4cYdooHuOBYg=',
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL || 'http://localhost:3000',
+  },
 };
 
 export default nextConfig;
