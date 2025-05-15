@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -6,11 +6,11 @@ import { prisma } from "@/lib/prisma";
 // GET /api/diagnostic/[id]/pdf
 // Récupère le PDF d'un diagnostic spécifique
 export async function GET(
-  req: NextRequest,
-  context: { params: { id: string } }
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const id = context.params.id;
+    const id = (await params).id;
 
     // Vérification de l'authentification
     const session = await getServerSession(authOptions);

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -6,8 +6,8 @@ import { prisma } from "@/lib/prisma";
 // GET /api/volunteer/beneficiary/[id]
 // Récupère les détails d'un bénéficiaire spécifique
 export async function GET(
-  req: NextRequest,
-  context: { params: { id: string } }
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Vérification de l'authentification
@@ -20,7 +20,7 @@ export async function GET(
       );
     }
     
-    const beneficiaryId = context.params.id;
+    const beneficiaryId = (await params).id;
 
     // Vérifier que le bénéficiaire existe et qu'il est bien lié au bénévole connecté
     const beneficiary = await prisma.beneficiaries.findFirst({

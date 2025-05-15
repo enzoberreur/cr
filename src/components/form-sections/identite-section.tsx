@@ -18,11 +18,22 @@ import {
 import { UseFormReturn } from "react-hook-form";
 import { DiagnosticFormData } from "@/lib/schemas/diagnostic";
 
-interface IdentiteSectionProps {
-  form: UseFormReturn<DiagnosticFormData>;
+// Type pour le bénéficiaire
+interface Beneficiary {
+  id: string;
+  firstName?: string;
+  lastName?: string;
+  [key: string]: any;
 }
 
-export function IdentiteSection({ form }: IdentiteSectionProps) {
+interface IdentiteSectionProps {
+  form?: UseFormReturn<DiagnosticFormData>;
+  defaultValues?: any;
+  onValuesChange?: (values: any) => void;
+  beneficiary?: Beneficiary | null;
+}
+
+export function IdentiteSection({ form, defaultValues, onValuesChange, beneficiary }: IdentiteSectionProps) {
   return (
     <div className="space-y-4">
       <FormField

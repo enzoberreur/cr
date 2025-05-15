@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -6,8 +6,8 @@ import { prisma } from "@/lib/prisma";
 // GET /api/volunteer/diagnostic/[id]
 // Récupère les détails d'un diagnostic spécifique
 export async function GET(
-  req: NextRequest,
-  context: { params: { id: string } }
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Vérification de l'authentification
@@ -20,7 +20,7 @@ export async function GET(
       );
     }
     
-    const diagnosticId = context.params.id;
+    const diagnosticId = (await params).id;
 
     // Récupérer le diagnostic avec les informations du bénéficiaire associé
     const diagnostic = await prisma.diagnostics.findFirst({
@@ -61,8 +61,8 @@ export async function GET(
 // PUT /api/volunteer/diagnostic/[id]
 // Met à jour un diagnostic existant
 export async function PUT(
-  req: NextRequest,
-  context: { params: { id: string } }
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Vérification de l'authentification
@@ -75,7 +75,7 @@ export async function PUT(
       );
     }
     
-    const diagnosticId = context.params.id;
+    const diagnosticId = (await params).id;
     
     // Vérifier que le diagnostic existe et qu'il est bien lié au bénévole connecté
     const diagnostic = await prisma.diagnostics.findFirst({

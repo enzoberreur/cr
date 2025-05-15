@@ -57,6 +57,25 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.userType = user.userType;
         token.email = user.email;
+        
+        // Pour les utilisateurs de type bénévole, récupérer les informations supplémentaires
+        if (user.userType === "VOLUNTEER") {
+          try {
+            const volunteer = await prisma.volunteers.findUnique({
+              where: { userId: user.id },
+              select: { firstName: true, lastName: true }
+            });
+            
+            if (volunteer) {
+              token.volunteer = {
+                firstName: volunteer.firstName,
+                lastName: volunteer.lastName
+              };
+            }
+          } catch (error) {
+            console.error("Erreur lors de la récupération des données du bénévole:", error);
+          }
+        }
       }
       return token;
     },
@@ -65,6 +84,21 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id;
         session.user.userType = token.userType as "ADMIN" | "VOLUNTEER" | "BENEFICIARY";
         session.user.email = token.email;
+        
+        // Récupérer les informations du bénévole si c'est un bénévole
+        if (session.user.userType === "VOLUNTEER") {
+          const volunteer = await prisma.volunteers.findUnique({
+            where: { userId: session.user.id },
+            select: { firstName: true, lastName: true }
+          });
+          
+          if (volunteer) {
+            session.user.volunteer = {
+              firstName: volunteer.firstName,
+              lastName: volunteer.lastName
+            };
+          }
+        }
       }
       return session;
     },

@@ -314,11 +314,7 @@ export function DiagnosticForm({ diagnosticId, beneficiaryId, isEdit = false }: 
           
           {/* Section Identité */}
           <TabsContent value="identite" className="space-y-4 mt-4">
-            <IdentiteSection 
-              defaultValues={form.getValues().formResponses?.identite} 
-              onValuesChange={(values) => updateFormResponses("identite", values)}
-              beneficiary={beneficiary}
-            />
+            <IdentiteSection form={form} />
             <div className="flex justify-end">
               <Button type="button" onClick={nextTab}>Suivant</Button>
             </div>

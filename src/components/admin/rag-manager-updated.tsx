@@ -289,14 +289,16 @@ export default function RAGManager() {
     <div>
       <div className="flex items-center justify-between mb-4">
         <div className="flex-1 mr-4">
-          <Input
-            type="text"
-            placeholder="Rechercher un document..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-md"
-            prefix={<Search className="h-4 w-4 text-gray-400" />}
-          />
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Rechercher un document..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9 max-w-md w-full"
+            />
+          </div>
         </div>
         <Button onClick={() => setIsAddDialogOpen(true)}>
           <Plus className="h-4 w-4 mr-2" /> Ajouter un document
